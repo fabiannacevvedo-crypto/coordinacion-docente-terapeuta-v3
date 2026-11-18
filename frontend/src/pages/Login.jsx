@@ -56,7 +56,7 @@ export const Login = () => {
           </div>
           <h1 style={{ fontSize: "1.6rem", fontWeight: "900", color: "#0f172a" }}>Iniciar Sesión</h1>
           <p style={{ fontSize: "0.875rem", color: "#64748b" }}>
-            Ingresa a tu cuenta de SincroAula v3
+            Ingresa a tu cuenta de SincroAula
           </p>
         </div>
 

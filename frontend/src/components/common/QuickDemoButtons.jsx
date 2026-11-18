@@ -20,7 +20,7 @@ export const QuickDemoButtons = ({ onSelect = null }) => {
       else if (rol === "FAMILIAR") navigate("/dashboard/familiar");
       else if (rol === "ADMIN") navigate("/dashboard/admin");
     } catch (err) {
-      console.error("Error al iniciar demo:", err);
+      console.error("Error al iniciar sesión por rol:", err);
     }
   };
 
@@ -28,10 +28,10 @@ export const QuickDemoButtons = ({ onSelect = null }) => {
     <div style={{ background: "#f8fafc", padding: "1rem", borderRadius: "14px", border: "1px dashed #cbd5e1" }}>
       <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", fontSize: "0.825rem", fontWeight: "700", color: "#475569", marginBottom: "0.75rem" }}>
         <Sparkles size={16} color="#2563eb" />
-        <span>Acceso Instantáneo de Demostración (1 Clic)</span>
+        <span>Acceso Directo por Rol (1 Clic)</span>
       </div>
       
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: "0.5rem" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(135px, 1fr))", gap: "0.5rem" }}>
         <button
           type="button"
           onClick={() => handleDemoClick("DOCENTE")}
@@ -39,7 +39,7 @@ export const QuickDemoButtons = ({ onSelect = null }) => {
           style={{ borderLeft: "4px solid var(--docente-color)", justifyContent: "flex-start", textAlign: "left" }}
         >
           <GraduationCap size={16} color="var(--docente-color)" />
-          <span>Docente Lucía</span>
+          <span>Rol Docente</span>
         </button>
 
         <button
@@ -49,7 +49,7 @@ export const QuickDemoButtons = ({ onSelect = null }) => {
           style={{ borderLeft: "4px solid var(--terapeuta-color)", justifyContent: "flex-start", textAlign: "left" }}
         >
           <Stethoscope size={16} color="var(--terapeuta-color)" />
-          <span>Terapeuta Mateo</span>
+          <span>Rol Terapeuta</span>
         </button>
 
         <button
@@ -59,7 +59,7 @@ export const QuickDemoButtons = ({ onSelect = null }) => {
           style={{ borderLeft: "4px solid var(--familiar-color)", justifyContent: "flex-start", textAlign: "left" }}
         >
           <Users size={16} color="var(--familiar-color)" />
-          <span>Tutor Carlos</span>
+          <span>Familiar / Tutor</span>
         </button>
 
         <button

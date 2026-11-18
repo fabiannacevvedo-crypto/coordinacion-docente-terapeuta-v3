@@ -8,7 +8,6 @@ import { Footer } from "./components/layout/Footer.jsx";
 import { Home } from "./pages/Home.jsx";
 import { Login } from "./pages/Login.jsx";
 import { Register } from "./pages/Register.jsx";
-import { PitchWorkspace } from "./pages/PitchWorkspace.jsx";
 import { DashboardDocente } from "./pages/DashboardDocente.jsx";
 import { DashboardTerapeuta } from "./pages/DashboardTerapeuta.jsx";
 import { DashboardFamiliar } from "./pages/DashboardFamiliar.jsx";
@@ -46,7 +45,6 @@ export const App = () => {
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
-              <Route path="/pitch" element={<PitchWorkspace />} />
 
               {/* Paneles de Roles */}
               <Route

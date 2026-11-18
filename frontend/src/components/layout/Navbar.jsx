@@ -8,9 +8,6 @@ import {
   Users,
   ShieldCheck,
   LogOut,
-  Presentation,
-  BookOpen,
-  Bell,
   CheckCircle2,
 } from "lucide-react";
 
@@ -30,6 +27,14 @@ export const Navbar = () => {
   const esAdmin = roles.includes("ADMIN");
 
   const isActive = (path) => location.pathname === path;
+
+  const getRoleDisplayName = () => {
+    if (esDocente) return "Rol Docente";
+    if (esTerapeuta) return "Rol Terapeuta";
+    if (esFamiliar) return "Familiar / Tutor";
+    if (esAdmin) return "Administrador";
+    return "Usuario";
+  };
 
   return (
     <header
@@ -71,9 +76,8 @@ export const Navbar = () => {
             <Sparkles size={20} />
           </div>
           <div>
-            <div style={{ fontSize: "1.2rem", fontWeight: "900", fontFamily: "var(--font-heading)", color: "#0f172a", lineHeight: 1 }}>
+            <div style={{ fontSize: "1.25rem", fontWeight: "900", fontFamily: "var(--font-heading)", color: "#0f172a", lineHeight: 1 }}>
               Sincro<span style={{ color: "var(--primary)" }}>Aula</span>
-              <span style={{ fontSize: "0.7rem", verticalAlign: "super", marginLeft: "4px", color: "#0284c7", fontWeight: "800" }}>v3</span>
             </div>
             <div style={{ fontSize: "0.68rem", color: "#64748b", fontWeight: "600" }}>Docente · Terapeuta · Familia</div>
           </div>
@@ -81,25 +85,6 @@ export const Navbar = () => {
 
         {/* Enlaces de Navegación */}
         <nav style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-          <Link
-            to="/pitch"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "0.35rem",
-              padding: "0.45rem 0.85rem",
-              borderRadius: "8px",
-              fontSize: "0.85rem",
-              fontWeight: "700",
-              background: isActive("/pitch") ? "linear-gradient(135deg, #2563eb 0%, #7c3aed 100%)" : "rgba(37, 99, 235, 0.08)",
-              color: isActive("/pitch") ? "white" : "var(--primary)",
-              transition: "all 0.2s",
-            }}
-          >
-            <Presentation size={16} />
-            <span>Workspace Pitch</span>
-          </Link>
-
           {user && (
             <>
               {esDocente && (
@@ -173,9 +158,9 @@ export const Navbar = () => {
         <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
           {user ? (
             <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
-              <div style={{ textAlign: "right", display: "none", mdDisplay: "block" }}>
-                <div style={{ fontSize: "0.875rem", fontWeight: "700", color: "#1e293b" }}>
-                  {user.nombre} {user.apellido}
+              <div style={{ textAlign: "right" }}>
+                <div style={{ fontSize: "0.85rem", fontWeight: "700", color: "#1e293b" }}>
+                  {getRoleDisplayName()}
                 </div>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "0.25rem" }}>
                   <span className={`badge badge-${roles[0]?.toLowerCase() || "docente"}`} style={{ fontSize: "0.65rem", padding: "0.1rem 0.45rem" }}>
