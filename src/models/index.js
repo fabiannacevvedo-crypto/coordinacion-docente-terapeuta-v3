@@ -11,6 +11,9 @@ import { ReporteModel } from "./reporte.model.js";
 import { EstrategiaModel } from "./estrategia.model.js";
 import { AlumnoEstrategiaModel } from "./alumno_estrategia.model.js";
 import { AlertaCoordinacionModel } from "./alerta_coordinacion.model.js";
+import { TareaModel } from "./tarea.model.js";
+import { MensajeChatModel } from "./mensaje_chat.model.js";
+import { PresentacionAdaptadaModel } from "./presentacion_adaptada.model.js";
 
 // ==========================================
 // ASOCIACIONES 1:1 - USUARIO CON SUS PERFILES
@@ -144,6 +147,81 @@ AlertaCoordinacionModel.belongsTo(UserModel, {
   as: "emisor",
 });
 
+// ==========================================
+// ASOCIACIONES 1:N - TAREAS CON FLUJO DE ADAPTACIÓN TDAH (DOCENTE -> TERAPEUTA -> TUTOR)
+// ==========================================
+AlumnoModel.hasMany(TareaModel, {
+  foreignKey: "alumno_id",
+  as: "tareas",
+  onDelete: "CASCADE",
+});
+TareaModel.belongsTo(AlumnoModel, {
+  foreignKey: "alumno_id",
+  as: "alumno",
+});
+
+UserModel.hasMany(TareaModel, {
+  foreignKey: "docente_id",
+  as: "tareas_creadas",
+});
+TareaModel.belongsTo(UserModel, {
+  foreignKey: "docente_id",
+  as: "docente",
+});
+
+UserModel.hasMany(TareaModel, {
+  foreignKey: "terapeuta_id",
+  as: "tareas_adaptadas",
+});
+TareaModel.belongsTo(UserModel, {
+  foreignKey: "terapeuta_id",
+  as: "terapeuta",
+});
+
+// ==========================================
+// ASOCIACIONES 1:N - CHAT MULTICANAL EN TIEMPO REAL
+// ==========================================
+AlumnoModel.hasMany(MensajeChatModel, {
+  foreignKey: "alumno_id",
+  as: "mensajes_chat",
+  onDelete: "CASCADE",
+});
+MensajeChatModel.belongsTo(AlumnoModel, {
+  foreignKey: "alumno_id",
+  as: "alumno",
+});
+
+UserModel.hasMany(MensajeChatModel, {
+  foreignKey: "emisor_id",
+  as: "mensajes_enviados",
+});
+MensajeChatModel.belongsTo(UserModel, {
+  foreignKey: "emisor_id",
+  as: "emisor",
+});
+
+// ==========================================
+// ASOCIACIONES 1:N - PRESENTACIONES ADAPTADAS PARA EL ALUMNO (CREADOR DOCENTE)
+// ==========================================
+AlumnoModel.hasMany(PresentacionAdaptadaModel, {
+  foreignKey: "alumno_id",
+  as: "presentaciones",
+  onDelete: "SET NULL",
+});
+PresentacionAdaptadaModel.belongsTo(AlumnoModel, {
+  foreignKey: "alumno_id",
+  as: "alumno",
+});
+
+UserModel.hasMany(PresentacionAdaptadaModel, {
+  foreignKey: "docente_id",
+  as: "presentaciones_creadas",
+});
+PresentacionAdaptadaModel.belongsTo(UserModel, {
+  foreignKey: "docente_id",
+  as: "docente",
+});
+
 export {
   sequelize,
   UserModel,
@@ -158,6 +236,9 @@ export {
   EstrategiaModel,
   AlumnoEstrategiaModel,
   AlertaCoordinacionModel,
+  TareaModel,
+  MensajeChatModel,
+  PresentacionAdaptadaModel,
 };
 
 export default {
@@ -174,4 +255,7 @@ export default {
   EstrategiaModel,
   AlumnoEstrategiaModel,
   AlertaCoordinacionModel,
+  TareaModel,
+  MensajeChatModel,
+  PresentacionAdaptadaModel,
 };

@@ -53,14 +53,22 @@ export const register = async (req, res) => {
     // 2. Hashear contraseña de forma segura
     const hashedPassword = await hashPassword(password);
 
-    // 3. Crear Usuario (Para pruebas y fluidez docente, estado inicial 'APROBADO' o 'PENDIENTE')
+    const defaultNombres = {
+      DOCENTE: { nombre: "Rol", apellido: "Docente" },
+      TERAPEUTA: { nombre: "Rol", apellido: "Terapeuta" },
+      FAMILIAR: { nombre: "Familiar", apellido: "Tutor" },
+      ADMIN: { nombre: "Rol", apellido: "Administrador" },
+    };
+    const fallback = defaultNombres[rol] || defaultNombres.DOCENTE;
+
+    // 3. Crear Usuario
     const nuevoUsuario = await UserModel.create({
-      nombre,
-      apellido,
+      nombre: nombre && nombre.trim() ? nombre.trim() : fallback.nombre,
+      apellido: apellido && apellido.trim() ? apellido.trim() : fallback.apellido,
       email,
       password: hashedPassword,
       telefono: telefono || null,
-      estado_verificacion: "APROBADO", // Aprobado para uso inmediato y fluido en evaluación
+      estado_verificacion: "APROBADO",
     });
 
     // 4. Asignar o crear Rol
@@ -112,16 +120,37 @@ export const register = async (req, res) => {
       });
 
       // Si el código de vinculación coincide con un alumno existente, vincularlo automáticamente
-      if (codigo_vinculacion) {
-        const alumno = await AlumnoModel.findOne({ where: { codigo_familiar: codigo_vinculacion } });
-        if (alumno) {
-          await VinculoAlumnoModel.create({
+      const codigoBuscar = codigo_vinculacion || "FAM-MAU-2026";
+      let alumno = await AlumnoModel.findOne({ where: { codigo_familiar: codigoBuscar } });
+      if (!alumno) {
+        alumno = await AlumnoModel.findOne();
+      }
+      if (alumno) {
+        await VinculoAlumnoModel.findOrCreate({
+          where: { alumno_id: alumno.id, user_id: nuevoUsuario.id },
+          defaults: {
             alumno_id: alumno.id,
             user_id: nuevoUsuario.id,
             tipo_vinculo: "TUTOR_FAMILIAR",
             estado: "ACTIVO",
-          });
-        }
+          },
+        });
+      }
+    }
+
+    // Si es DOCENTE o TERAPEUTA, vincularlo también a los alumnos activos para que pueda operar de inmediato
+    if (rol === "DOCENTE" || rol === "TERAPEUTA") {
+      const alumnosExistentes = await AlumnoModel.findAll();
+      for (const alum of alumnosExistentes) {
+        await VinculoAlumnoModel.findOrCreate({
+          where: { alumno_id: alum.id, user_id: nuevoUsuario.id },
+          defaults: {
+            alumno_id: alum.id,
+            user_id: nuevoUsuario.id,
+            tipo_vinculo: rol === "DOCENTE" ? "DOCENTE_AULA" : "TERAPEUTA_ACOMPANIANTE",
+            estado: "ACTIVO",
+          },
+        });
       }
     }
 
@@ -140,7 +169,7 @@ export const register = async (req, res) => {
 
     return res.status(201).json({
       ok: true,
-      mensaje: "¡Registro completado con éxito! Bienvenido a SincroAula v3",
+      mensaje: "¡Registro completado con éxito! Bienvenido a SincroAula",
       token,
       usuario: {
         id: nuevoUsuario.id,

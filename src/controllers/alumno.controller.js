@@ -2,6 +2,7 @@ import { matchedData } from "express-validator";
 import {
   AlumnoModel,
   UserModel,
+  RoleModel,
   VinculoAlumnoModel,
   ReporteModel,
   EstrategiaModel,
@@ -175,6 +176,23 @@ export const createAlumno = async (req, res) => {
       tipo_vinculo: rolCreador,
       estado: "ACTIVO",
     });
+
+    // Vincular también al Terapeuta y Tutor Familiar activos para asegurar coordinación inmediata
+    const terapeutas = await UserModel.findAll({
+      include: [{ model: RoleModel, as: "roles", where: { name: "TERAPEUTA" } }],
+      limit: 1,
+    });
+    if (terapeutas.length > 0 && terapeutas[0].id !== req.user.id) {
+      await VinculoAlumnoModel.findOrCreate({
+        where: { alumno_id: nuevoAlumno.id, user_id: terapeutas[0].id },
+        defaults: {
+          alumno_id: nuevoAlumno.id,
+          user_id: terapeutas[0].id,
+          tipo_vinculo: "TERAPEUTA_ACOMPANIANTE",
+          estado: "ACTIVO",
+        },
+      });
+    }
 
     return res.status(201).json({
       ok: true,
