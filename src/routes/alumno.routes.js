@@ -23,7 +23,7 @@ router.use(authMiddleware);
 router.get("/", getAllAlumnos);
 router.get("/:id", alumnoIdParamValidation, handleValidationErrors, getAlumnoById);
 router.post("/", isProfesional, createAlumnoValidation, handleValidationErrors, createAlumno);
-router.put("/:id", isProfesional, updateAlumnoValidation, handleValidationErrors, updateAlumno);
+router.put("/:id", updateAlumnoValidation, handleValidationErrors, updateAlumno);
 router.delete("/:id", isAdmin, alumnoIdParamValidation, handleValidationErrors, deleteAlumno);
 router.post("/:id/vincular", isProfesional, alumnoIdParamValidation, handleValidationErrors, vincularUsuario);
 

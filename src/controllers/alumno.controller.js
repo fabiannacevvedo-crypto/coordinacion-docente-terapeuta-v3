@@ -161,6 +161,16 @@ export const createAlumno = async (req, res) => {
       data.codigo_familiar = `FAM-${data.nombre.substring(0, 3).toUpperCase()}-${Math.floor(1000 + Math.random() * 9000)}`;
     }
 
+    if (data.ficha_medica && typeof data.ficha_medica === "object") {
+      data.ficha_medica = JSON.stringify(data.ficha_medica);
+    }
+    if (data.sincronizador_matutino && typeof data.sincronizador_matutino === "object") {
+      data.sincronizador_matutino = JSON.stringify(data.sincronizador_matutino);
+    }
+    if (data.agenda_diaria && typeof data.agenda_diaria === "object") {
+      data.agenda_diaria = JSON.stringify(data.agenda_diaria);
+    }
+
     const nuevoAlumno = await AlumnoModel.create(data);
 
     // Si el creador es Docente o Terapeuta, vincularlo automáticamente
@@ -223,6 +233,16 @@ export const updateAlumno = async (req, res) => {
         ok: false,
         mensaje: `Alumno con ID ${id} no encontrado`,
       });
+    }
+
+    if (datosValidados.ficha_medica && typeof datosValidados.ficha_medica === "object") {
+      datosValidados.ficha_medica = JSON.stringify(datosValidados.ficha_medica);
+    }
+    if (datosValidados.sincronizador_matutino && typeof datosValidados.sincronizador_matutino === "object") {
+      datosValidados.sincronizador_matutino = JSON.stringify(datosValidados.sincronizador_matutino);
+    }
+    if (datosValidados.agenda_diaria && typeof datosValidados.agenda_diaria === "object") {
+      datosValidados.agenda_diaria = JSON.stringify(datosValidados.agenda_diaria);
     }
 
     await alumno.update(datosValidados);

@@ -154,55 +154,117 @@ export async function runSeed() {
   });
   console.log("[OK] Usuarios base creados (Rol Docente, Rol Terapeuta, Familiar Tutor, Administrador)");
 
-  // 3. Crear Alumnos con orientación en TDAH
+  // 3. Crear Alumnos con orientación en TDAH y Ficha Médica / Gravedad
+  const fichaMedicaBase1 = JSON.stringify({
+    profesional_emisor: "Servicio de Neurología Infantil · Mat. 8412",
+    subtipo_dsm5: "TDAH Presentación Combinada (F90.2)",
+    ventana_atencional_min: 10,
+    hipersensibilidad: "Auditiva a timbres y ambientes reverberantes",
+    apoyo_farmacologico: "Sin medicación en horario escolar · Abordaje conductual-ejecutivo",
+    indicacion_clinica: "Fraccionar tareas en bloques máximos de 10 min con pausas motoras de 3 min.",
+  });
+
+  const sincronizadorBase1 = JSON.stringify({
+    fecha: new Date().toISOString().split("T")[0],
+    descanso: "Descanso Completo y Reparador (8 hs)",
+    disposicion: "Motivado y con Foco Activo",
+    preparacion: "Desayuno sin pantallas + Anticipación visual del día",
+    completado: true,
+  });
+
+  const agendaBase1 = JSON.stringify([
+    { id: 1, hora: "08:15", bloque: "Recepción y Anclaje Visual", duracion: "10 min", tipo: "FOCO", completado: true },
+    { id: 2, hora: "08:30", bloque: "Misión 1: Clasificación Micro-segmentada", duracion: "10 min", tipo: "FOCO", completado: true },
+    { id: 3, hora: "08:40", bloque: "Pausa Kinestésica y Propioceptiva", duracion: "3 min", tipo: "PAUSA", completado: false },
+    { id: 4, hora: "08:45", bloque: "Misión 2: Presentación Adaptada en Sala", duracion: "10 min", tipo: "FOCO", completado: false },
+    { id: 5, hora: "09:00", bloque: "Cierre con Economía de Fichas y Retroalimentación", duracion: "5 min", tipo: "CIERRE", completado: false },
+  ]);
+
   const [alumno1] = await AlumnoModel.findOrCreate({
     where: { codigo_familiar: "FAM-MAU-2026" },
     defaults: {
       nombre: "Alumno 1",
-      apellido: "(Seguimiento TDAH Combinado)",
+      apellido: "(TDAH Combinado)",
       fecha_nacimiento: "2020-04-15",
-      diagnostico: "TDAH Presentación Combinada (Inatención e Hiperactividad-Impulsividad) con sensibilidad auditiva",
+      diagnostico: "TDAH Presentación Combinada (F90.2) con sensibilidad acústica",
+      gravedad_tdah: "MODERADO",
+      ficha_medica: fichaMedicaBase1,
+      sincronizador_matutino: sincronizadorBase1,
+      agenda_diaria: agendaBase1,
       sala_grado: "Sala de 5 Años - Turno Mañana",
       turno: "MAÑANA",
       semaforo_actual: "VERDE",
-      observaciones: "Responde de manera sobresaliente a micro-segmentación de consignas (Chunking), apoyos visuales y bloques cortos de 10 minutos con descarga motriz.",
+      observaciones: "Micro-segmentación de consignas (Chunking) y bloques de 10 min.",
       codigo_familiar: "FAM-MAU-2026",
     },
   });
   await alumno1.update({
-    diagnostico: "TDAH Presentación Combinada (Inatención e Hiperactividad-Impulsividad) con sensibilidad auditiva",
-    observaciones: "Responde de manera sobresaliente a micro-segmentación de consignas (Chunking), apoyos visuales y bloques cortos de 10 minutos con descarga motriz.",
+    diagnostico: "TDAH Presentación Combinada (F90.2) con sensibilidad acústica",
+    gravedad_tdah: "MODERADO",
+    ficha_medica: fichaMedicaBase1,
+    sincronizador_matutino: sincronizadorBase1,
+    agenda_diaria: agendaBase1,
   });
 
   const [alumno2] = await AlumnoModel.findOrCreate({
     where: { codigo_familiar: "FAM-SOF-2026" },
     defaults: {
       nombre: "Alumna 2",
-      apellido: "(TDAH Predominio Hiperactivo)",
+      apellido: "(TDAH Hiperactivo)",
       fecha_nacimiento: "2020-09-20",
-      diagnostico: "TDAH con predominio hiperactivo-impulsivo en transiciones áulicas",
+      diagnostico: "TDAH Predominio Hiperactivo-Impulsivo (F90.1)",
+      gravedad_tdah: "SEVERO",
+      ficha_medica: JSON.stringify({
+        profesional_emisor: "Gabinete de Neuropediatría · Mat. 5210",
+        subtipo_dsm5: "TDAH Predominio Hiperactivo-Impulsivo (F90.1)",
+        ventana_atencional_min: 6,
+        hipersensibilidad: "Motriz en transiciones largas",
+        apoyo_farmacologico: "Seguimiento interdisciplinario activo",
+        indicacion_clinica: "Bloques ultra-cortos de 6 min con descarga motriz y autoinstrucciones.",
+      }),
+      sincronizador_matutino: JSON.stringify({
+        fecha: new Date().toISOString().split("T")[0],
+        descanso: "Sueño Intermitente (Sugerir Pausas)",
+        disposicion: "Energía Alta / Necesita Descarga Motriz",
+        preparacion: "Se anticipó la rutina escolar con pictogramas",
+        completado: true,
+      }),
+      agenda_diaria: agendaBase1,
       sala_grado: "Sala de 5 Años - Turno Mañana",
       turno: "MAÑANA",
       semaforo_actual: "AMARILLO",
-      observaciones: "Requiere pausas kinestésicas activas, economía de fichas positiva y anticipación con reloj visual 5 minutos antes de cambiar de actividad.",
+      observaciones: "Pausas kinestésicas cada 6 minutos y reloj visual regresivo.",
       codigo_familiar: "FAM-SOF-2026",
     },
   });
+  await alumno2.update({ gravedad_tdah: "SEVERO" });
 
   const [alumno3] = await AlumnoModel.findOrCreate({
     where: { codigo_familiar: "FAM-LUC-2026" },
     defaults: {
       nombre: "Alumno 3",
-      apellido: "(TDAH Predominio Inatento)",
+      apellido: "(TDAH Inatento)",
       fecha_nacimiento: "2021-02-10",
-      diagnostico: "TDAH con predominio de déficit de atención y fatiga en memoria de trabajo",
+      diagnostico: "TDAH Predominio Déficit de Atención (F90.0)",
+      gravedad_tdah: "LEVE",
+      ficha_medica: JSON.stringify({
+        profesional_emisor: "Psicopedagogía Clínica · Mat. 3190",
+        subtipo_dsm5: "TDAH Predominio Inatento (F90.0)",
+        ventana_atencional_min: 15,
+        hipersensibilidad: "Distractores visuales múltiples en mesa",
+        apoyo_farmacologico: "No requiere",
+        indicacion_clinica: "Hojas de bajo estímulo visual y consigna de un solo paso.",
+      }),
+      sincronizador_matutino: sincronizadorBase1,
+      agenda_diaria: agendaBase1,
       sala_grado: "Sala de 4 Años - Turno Mañana",
       turno: "MAÑANA",
       semaforo_actual: "VERDE",
-      observaciones: "Necesita reducción de distractores visuales en hoja (diseño limpio), instrucciones de un solo paso y refuerzo verbal inmediato.",
+      observaciones: "Reducción de distractores visuales en hoja e instrucción única.",
       codigo_familiar: "FAM-LUC-2026",
     },
   });
+  await alumno3.update({ gravedad_tdah: "LEVE" });
   console.log("[OK] Alumnos con perfiles neuroeducativos TDAH inicializados");
 
   // 4. Vínculos Equipo Interdisciplinario -> Alumnos
