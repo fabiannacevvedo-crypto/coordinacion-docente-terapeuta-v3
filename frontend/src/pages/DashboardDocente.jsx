@@ -18,6 +18,11 @@ import {
   UserPlus,
   ClipboardList,
   Brain,
+  Sliders,
+  Volume2,
+  Sun,
+  Clock,
+  Activity,
 } from "lucide-react";
 
 export const DashboardDocente = () => {
@@ -27,6 +32,14 @@ export const DashboardDocente = () => {
   const [reportes, setReportes] = useState([]);
   const [tareas, setTareas] = useState([]);
   const [filtroSemaforo, setFiltroSemaforo] = useState("TODOS");
+
+  // Radar de Clima Sensorial y Ejecutivo del Aula (Nueva funcionalidad visual y comunicativa para Docente)
+  const [climaAula, setClimaAula] = useState({
+    nivelRuido: "MODULADO",
+    cargaVisual: "DESPEJADA",
+    faseClase: "BLOQUE_FOCO_CORTO",
+    tiempoFocoMin: 10,
+  });
 
   // Modales
   const [modalAlertaOpen, setModalAlertaOpen] = useState(false);
@@ -97,6 +110,22 @@ export const DashboardDocente = () => {
   const mostrarNotificacion = (texto) => {
     setMensajeExito(texto);
     setTimeout(() => setMensajeExito(null), 5000);
+  };
+
+  // Sincronizar Clima Sensorial del Aula con el Terapeuta y Tutor en 1 clic
+  const sincronizarClimaAulaConEquipo = async () => {
+    if (alumnos.length === 0) return;
+    try {
+      await api.enviarMensajeChat({
+        alumno_id: alumnos[0].id,
+        destinatario_rol: "TODOS",
+        contenido: `Sincronización de Clima de Aula en Vivo: Acústica [${climaAula.nivelRuido}] · Entorno Visual [${climaAula.cargaVisual}] · Dinámica Actual [${climaAula.faseClase} - ${climaAula.tiempoFocoMin} min].`,
+        tipo_mensaje: "CHAT",
+      });
+      mostrarNotificacion("Estado sensorial y dinámica del aula sincronizados en vivo con el Rol Terapeuta y Familiar / Tutor.");
+    } catch (err) {
+      console.error("Error sincronizando clima de aula:", err);
+    }
   };
 
   // Cambio interactivo rápido de semáforo emocional para un alumno
@@ -213,7 +242,7 @@ export const DashboardDocente = () => {
             Tablero del Docente y Coordinación con Terapeuta
           </h1>
           <p style={{ fontSize: "0.875rem", color: "#64748b" }}>
-            Registro de alumnos, creación de presentaciones adaptadas, envío de tareas para adaptación TDAH y chat con familias
+            Registro de alumnos, creación de presentaciones adaptadas, envío de tareas para adaptación TDAH y comunicación en tiempo real
           </p>
         </div>
 
@@ -272,6 +301,94 @@ export const DashboardDocente = () => {
         </div>
       )}
 
+      {/* NUEVO MÓDULO INTERACTIVO DOCENTE: RADAR DE CLIMA SENSORIAL Y DINÁMICA DEL AULA EN VIVO */}
+      <div
+        className="card"
+        style={{
+          background: "linear-gradient(135deg, #eff6ff 0%, #f8fafc 100%)",
+          border: "1px solid #bfdbfe",
+          marginBottom: "1.75rem",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "1rem", marginBottom: "1rem" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+            <div style={{ background: "#2563eb", color: "white", padding: "0.5rem", borderRadius: "10px" }}>
+              <Activity size={20} />
+            </div>
+            <div>
+              <h3 style={{ fontSize: "1.1rem", fontWeight: "900", color: "#0f172a" }}>
+                Radar de Clima Sensorial y Dinámica Ejecutiva del Aula
+              </h3>
+              <p style={{ fontSize: "0.78rem", color: "#475569" }}>
+                Ajusta las variables ambientales de la sala y transmítelas en vivo al Rol Terapeuta para anticipar apoyos TDAH
+              </p>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={sincronizarClimaAulaConEquipo}
+            className="btn btn-primary btn-sm"
+          >
+            <Send size={14} />
+            <span>Transmitir Estado del Aula al Terapeuta y Tutor</span>
+          </button>
+        </div>
+
+        <div className="grid-3">
+          <div style={{ background: "white", padding: "0.85rem", borderRadius: "10px", border: "1px solid #e2e8f0" }}>
+            <div style={{ fontSize: "0.78rem", fontWeight: "800", color: "#1e293b", marginBottom: "0.4rem", display: "flex", alignItems: "center", gap: "0.35rem" }}>
+              <Volume2 size={15} color="#2563eb" />
+              <span>Nivel Acústico de la Sala</span>
+            </div>
+            <select
+              value={climaAula.nivelRuido}
+              onChange={(e) => setClimaAula({ ...climaAula, nivelRuido: e.target.value })}
+              className="form-select"
+              style={{ fontSize: "0.82rem", padding: "0.45rem" }}
+            >
+              <option value="SILENCIO_FOCO">Silencio de Enfoque (Ideal Memoria de Trabajo)</option>
+              <option value="MODULADO">Murmullo Modulado de Trabajo Grupal</option>
+              <option value="ALTO_ESTIMULO">Alto Estímulo Sonoro (Sugerir Filtro Auditivo)</option>
+            </select>
+          </div>
+
+          <div style={{ background: "white", padding: "0.85rem", borderRadius: "10px", border: "1px solid #e2e8f0" }}>
+            <div style={{ fontSize: "0.78rem", fontWeight: "800", color: "#1e293b", marginBottom: "0.4rem", display: "flex", alignItems: "center", gap: "0.35rem" }}>
+              <Sun size={15} color="#7c3aed" />
+              <span>Carga de Estímulos Visuales</span>
+            </div>
+            <select
+              value={climaAula.cargaVisual}
+              onChange={(e) => setClimaAula({ ...climaAula, cargaVisual: e.target.value })}
+              className="form-select"
+              style={{ fontSize: "0.82rem", padding: "0.45rem" }}
+            >
+              <option value="DESPEJADA">Mesas Despejadas · 1 Material Único (TDAH)</option>
+              <option value="APOYO_PICTOGRAFICO">Pizarrón con Secuencia Pictográfica Activa</option>
+              <option value="TRANSICION_PATIO">Transición hacia Patio / Espacio Abierto</option>
+            </select>
+          </div>
+
+          <div style={{ background: "white", padding: "0.85rem", borderRadius: "10px", border: "1px solid #e2e8f0" }}>
+            <div style={{ fontSize: "0.78rem", fontWeight: "800", color: "#1e293b", marginBottom: "0.4rem", display: "flex", alignItems: "center", gap: "0.35rem" }}>
+              <Clock size={15} color="#059669" />
+              <span>Modalidad de Bloque Pedagógico</span>
+            </div>
+            <select
+              value={climaAula.faseClase}
+              onChange={(e) => setClimaAula({ ...climaAula, faseClase: e.target.value })}
+              className="form-select"
+              style={{ fontSize: "0.82rem", padding: "0.45rem" }}
+            >
+              <option value="BLOQUE_FOCO_CORTO">Misión Corta Micro-segmentada (10 min)</option>
+              <option value="PAUSA_KINESTESICA">Pausa Kinestésica y Descarga Motriz (3 min)</option>
+              <option value="CIERRE_METACOGNITIVO">Cierre y Refuerzo con Economía de Fichas</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
       {/* Alertas Activas en Tiempo Real */}
       {alertas.length > 0 && (
         <div
@@ -314,7 +431,7 @@ export const DashboardDocente = () => {
         </div>
       )}
 
-      {/* SECCIÓN 1: CREACIÓN DE PRESENTACIONES ADAPTADAS PARA EL ALUMNO (Movida exclusivamente al Docente) */}
+      {/* SECCIÓN 1: CREACIÓN DE PRESENTACIONES ADAPTADAS PARA EL ALUMNO */}
       <CreadorPresentacionesAdaptadas alumnos={alumnos} />
 
       {/* SECCIÓN 2: SEGUIMIENTO DEL CIRCUITO DE TAREAS (Docente -> Terapeuta adapta TDAH -> Tutor recibe y reporta) */}
@@ -374,17 +491,17 @@ export const DashboardDocente = () => {
 
                   {t.estado === "PENDIENTE_TERAPEUTA" && (
                     <span className="badge" style={{ background: "#fef3c7", color: "#92400e" }}>
-                      ⏳ En Gabinete Terapeuta (Pendiente de Adaptación TDAH)
+                      En Gabinete Terapeuta (Pendiente de Adaptación TDAH)
                     </span>
                   )}
                   {t.estado === "ADAPTADA_ENVIADA_TUTOR" && (
                     <span className="badge" style={{ background: "#dbeafe", color: "#1e40af" }}>
-                      ✅ Adaptada por Terapeuta · Enviada al Tutor
+                      Adaptada por Terapeuta · Enviada al Tutor
                     </span>
                   )}
                   {t.estado === "COMPLETADA_POR_TUTOR" && (
                     <span className="badge" style={{ background: "#d1fae5", color: "#065f46" }}>
-                      🌟 Completada con Reporte del Tutor
+                      Completada con Reporte del Tutor
                     </span>
                   )}
                 </div>
@@ -395,14 +512,14 @@ export const DashboardDocente = () => {
 
                 {t.adaptacion_terapeuta && (
                   <div style={{ background: "#f5f3ff", border: "1px solid #ddd6fe", padding: "0.75rem", borderRadius: "8px", fontSize: "0.825rem", color: "#4c1d95", marginBottom: "0.5rem", whiteSpace: "pre-line" }}>
-                    <strong>🧠 Adaptación TDAH realizada por Rol Terapeuta ({t.pautas_tdah_aplicadas}):</strong>
+                    <strong>Adaptación TDAH realizada por Rol Terapeuta ({t.pautas_tdah_aplicadas}):</strong>
                     <div style={{ marginTop: "0.25rem" }}>{t.adaptacion_terapeuta}</div>
                   </div>
                 )}
 
                 {t.reporte_tutor && (
                   <div style={{ background: "#ecfdf5", border: "1px solid #a7f3d0", padding: "0.75rem", borderRadius: "8px", fontSize: "0.825rem", color: "#065f46" }}>
-                    <strong>👨‍👩‍👦 Devolución del Familiar / Tutor (Dirigido a: {t.destinatario_reporte_tutor}):</strong> {t.reporte_tutor}
+                    <strong>Devolución del Familiar / Tutor (Dirigido a: {t.destinatario_reporte_tutor}):</strong> {t.reporte_tutor}
                     <span style={{ marginLeft: "0.5rem", fontWeight: "700" }}>[{t.nivel_atencion_hogar}]</span>
                   </div>
                 )}
@@ -454,7 +571,7 @@ export const DashboardDocente = () => {
                 <strong>Perfil TDAH:</strong> {alumno.diagnostico || "En seguimiento neuroeducativo"}
               </p>
 
-              {/* Selector interactivo de semáforo para cambiarlo al instante */}
+              {/* Selector interactivo de semáforo sin emojis */}
               <div style={{ background: "#f8fafc", padding: "0.6rem", borderRadius: "8px", marginBottom: "1rem" }}>
                 <div style={{ fontSize: "0.725rem", fontWeight: "700", color: "#64748b", marginBottom: "0.35rem" }}>
                   Cambio Rápido de Estado en Aula:
@@ -464,7 +581,7 @@ export const DashboardDocente = () => {
                     onClick={() => cambiarSemaforoAlumno(alumno.id, "VERDE")}
                     style={{
                       flex: 1,
-                      padding: "0.3rem",
+                      padding: "0.35rem",
                       borderRadius: "6px",
                       border: "none",
                       background: alumno.semaforo_actual === "VERDE" ? "#10b981" : "#e2e8f0",
@@ -474,13 +591,13 @@ export const DashboardDocente = () => {
                       cursor: "pointer",
                     }}
                   >
-                    🟢 Verde
+                    Verde
                   </button>
                   <button
                     onClick={() => cambiarSemaforoAlumno(alumno.id, "AMARILLO")}
                     style={{
                       flex: 1,
-                      padding: "0.3rem",
+                      padding: "0.35rem",
                       borderRadius: "6px",
                       border: "none",
                       background: alumno.semaforo_actual === "AMARILLO" ? "#f59e0b" : "#e2e8f0",
@@ -490,13 +607,13 @@ export const DashboardDocente = () => {
                       cursor: "pointer",
                     }}
                   >
-                    🟡 Amarillo
+                    Amarillo
                   </button>
                   <button
                     onClick={() => cambiarSemaforoAlumno(alumno.id, "ROJO")}
                     style={{
                       flex: 1,
-                      padding: "0.3rem",
+                      padding: "0.35rem",
                       borderRadius: "6px",
                       border: "none",
                       background: alumno.semaforo_actual === "ROJO" ? "#ef4444" : "#e2e8f0",
@@ -506,7 +623,7 @@ export const DashboardDocente = () => {
                       cursor: "pointer",
                     }}
                   >
-                    🔴 Rojo
+                    Rojo
                   </button>
                 </div>
               </div>
@@ -839,9 +956,9 @@ export const DashboardDocente = () => {
                     onChange={(e) => setNuevoReporte({ ...nuevoReporte, semaforo_emocional: e.target.value })}
                     className="form-select"
                   >
-                    <option value="VERDE">🟢 Verde (Regulado / En Foco)</option>
-                    <option value="AMARILLO">🟡 Amarillo (Inquieto / Alerta)</option>
-                    <option value="ROJO">🔴 Rojo (Desregulado / Pausa)</option>
+                    <option value="VERDE">Verde (Regulado / En Foco)</option>
+                    <option value="AMARILLO">Amarillo (Inquieto / Alerta)</option>
+                    <option value="ROJO">Rojo (Desregulado / Pausa)</option>
                   </select>
                 </div>
                 <div className="form-group">

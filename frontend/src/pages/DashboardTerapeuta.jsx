@@ -12,9 +12,11 @@ import {
   ArrowRight,
   Brain,
   ClipboardCheck,
-  Sparkles,
   Send,
   Sliders,
+  Zap,
+  Users,
+  GraduationCap,
 } from "lucide-react";
 
 export const DashboardTerapeuta = () => {
@@ -58,6 +60,11 @@ export const DashboardTerapeuta = () => {
     cargarDatos();
   }, []);
 
+  const mostrarNotificacion = (texto) => {
+    setMensajeExito(texto);
+    setTimeout(() => setMensajeExito(null), 5000);
+  };
+
   const atenderAlerta = async (id) => {
     try {
       await api.atenderAlerta(id);
@@ -69,14 +76,30 @@ export const DashboardTerapeuta = () => {
     }
   };
 
+  // Emitir prescripción o pauta rápida en vivo hacia Docente o Tutor Familiar
+  const emitirPautaClinicaEnVivo = async (texto, destinatario = "TODOS") => {
+    if (alumnos.length === 0) return;
+    try {
+      await api.enviarMensajeChat({
+        alumno_id: alumnos[0].id,
+        destinatario_rol: destinatario,
+        contenido: texto,
+        tipo_mensaje: "PAUTA_TERAPEUTICA",
+      });
+      mostrarNotificacion(`Pauta clínica TDAH transmitida en tiempo real a: ${destinatario === "TODOS" ? "Docente y Tutor Familiar" : destinatario}.`);
+    } catch (err) {
+      console.error("Error emitiendo pauta:", err);
+    }
+  };
+
   const abrirModalAdaptacion = (tarea) => {
     setTareaSeleccionada(tarea);
     const textoSugerido =
       tarea.adaptacion_terapeuta ||
-      `🎯 ADAPTACIÓN NEUROEDUCATIVA TDAH PARA "${tarea.titulo}":\n• PASO 1 (Preparación - 2 min): Despejar la mesa dejando únicamente el material de esta actividad para evitar distractores visuales.\n• PASO 2 (Misión Corta - 5 min): Realizar la primera mitad de la consigna ("${tarea.consigna_original.substring(
+      `ADAPTACIÓN NEUROEDUCATIVA TDAH PARA "${tarea.titulo}":\n• PASO 1 (Preparación - 2 min): Despejar la mesa dejando únicamente el material de esta actividad para evitar distractores visuales.\n• PASO 2 (Misión Corta - 5 min): Realizar la primera mitad de la consigna ("${tarea.consigna_original.substring(
         0,
         70
-      )}...") usando el Temporizador Visual.\n• PAUSA KINESTÉSICA (2 min): Estirar los brazos o caminar antes del último paso.\n• PASO 3 (Cierre y Logro - 4 min): Completar la actividad y otorgar 1 estrella inmediata en el tablero de Economía de Fichas.`;
+      )}...") usando el Temporizador Visual.\n• PAUSA KINESTÉSICA (2 min): Estirar los brazos o caminar antes del último paso.\n• PASO 3 (Cierre y Logro - 4 min): Completar la actividad y otorgar 1 logro inmediato en el tablero de Economía de Fichas.`;
 
     setFormAdaptacion({
       subtipo_tdah_objetivo:
@@ -107,10 +130,9 @@ export const DashboardTerapeuta = () => {
       const res = await api.adaptarTarea(tareaSeleccionada.id, formAdaptacion);
       if (res.ok) {
         setTareaSeleccionada(null);
-        setMensajeExito(
-          "¡Tarea adaptada con pautas TDAH y enviada exitosamente al Portal del Familiar / Tutor!"
+        mostrarNotificacion(
+          "Tarea adaptada con pautas TDAH y enviada exitosamente al Portal del Familiar / Tutor."
         );
-        setTimeout(() => setMensajeExito(null), 5000);
         cargarDatos();
       }
     } catch (err) {
@@ -146,6 +168,79 @@ export const DashboardTerapeuta = () => {
         </div>
       )}
 
+      {/* NUEVO MÓDULO VISUAL TERAPEUTA: PRESCRIPCIÓN RÁPIDA DE PAUTAS TDAH HACIA EL AULA Y EL HOGAR */}
+      <div
+        className="card"
+        style={{
+          background: "linear-gradient(135deg, #f5f3ff 0%, #f8fafc 100%)",
+          border: "1px solid #ddd6fe",
+          marginBottom: "1.75rem",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "0.75rem", marginBottom: "0.85rem" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.55rem" }}>
+            <div style={{ background: "var(--terapeuta-color)", color: "white", padding: "0.5rem", borderRadius: "10px" }}>
+              <Zap size={18} />
+            </div>
+            <div>
+              <h3 style={{ fontSize: "1.05rem", fontWeight: "900", color: "#0f172a" }}>
+                Emisor Instantáneo de Pautas Clínicas TDAH (Aula y Hogar)
+              </h3>
+              <p style={{ fontSize: "0.78rem", color: "#475569" }}>
+                Envía recomendaciones ejecutivas inmediatas en 1 clic al Rol Docente o al Familiar / Tutor
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid-3">
+          <button
+            type="button"
+            onClick={() =>
+              emitirPautaClinicaEnVivo(
+                "Sugerencia Clínica al Aula: Activar pausa kinestésica de 2 minutos y encargo motor antes del próximo bloque.",
+                "DOCENTE"
+              )
+            }
+            className="btn btn-secondary btn-sm"
+            style={{ justifyContent: "flex-start", textAlign: "left", padding: "0.65rem 0.85rem", borderLeft: "4px solid #2563eb" }}
+          >
+            <GraduationCap size={16} color="#2563eb" style={{ flexShrink: 0 }} />
+            <span style={{ fontSize: "0.78rem" }}>Sugerir a Docente: Pausa Kinestésica en Sala</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() =>
+              emitirPautaClinicaEnVivo(
+                "Sugerencia Clínica al Aula: Reducir estímulos visuales en mesa y presentar solo el Paso 1 con reloj visual.",
+                "DOCENTE"
+              )
+            }
+            className="btn btn-secondary btn-sm"
+            style={{ justifyContent: "flex-start", textAlign: "left", padding: "0.65rem 0.85rem", borderLeft: "4px solid #7c3aed" }}
+          >
+            <Brain size={16} color="#7c3aed" style={{ flexShrink: 0 }} />
+            <span style={{ fontSize: "0.78rem" }}>Sugerir a Docente: Micro-segmentación y Foco</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() =>
+              emitirPautaClinicaEnVivo(
+                "Pauta para el Hogar: Realizar la tarea en bloques de 5 minutos con el reloj visual y reforzar cada paso con 1 estrella.",
+                "FAMILIAR"
+              )
+            }
+            className="btn btn-secondary btn-sm"
+            style={{ justifyContent: "flex-start", textAlign: "left", padding: "0.65rem 0.85rem", borderLeft: "4px solid #059669" }}
+          >
+            <Users size={16} color="#059669" style={{ flexShrink: 0 }} />
+            <span style={{ fontSize: "0.78rem" }}>Sugerir a Tutor: Bloques de 5 min en Casa</span>
+          </button>
+        </div>
+      </div>
+
       {/* SECCIÓN PRINCIPAL: BANDEJA DE TAREAS ENVIADAS POR EL DOCENTE PARA ADAPTACIÓN TDAH */}
       <div className="card" style={{ borderTop: "4px solid var(--terapeuta-color)", marginBottom: "2rem" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "1rem", marginBottom: "1.25rem" }}>
@@ -172,7 +267,7 @@ export const DashboardTerapeuta = () => {
         {tareasPendientes.length > 0 && (
           <div style={{ marginBottom: "1.5rem" }}>
             <div style={{ fontSize: "0.85rem", fontWeight: "800", color: "#b45309", marginBottom: "0.6rem" }}>
-              🔔 Tareas Recibidas del Rol Docente que Requieren tu Adaptación TDAH:
+              Tareas Recibidas del Rol Docente que Requieren tu Adaptación TDAH:
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
               {tareasPendientes.map((t) => (
@@ -224,7 +319,7 @@ export const DashboardTerapeuta = () => {
         {/* Historial de Tareas Ya Adaptadas y Respuestas del Tutor */}
         <div>
           <div style={{ fontSize: "0.85rem", fontWeight: "800", color: "#334155", marginBottom: "0.6rem" }}>
-            ✅ Tareas Adaptadas y Enviadas al Familiar / Tutor ({tareasAdaptadas.length}):
+            Tareas Adaptadas y Enviadas al Familiar / Tutor ({tareasAdaptadas.length}):
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
             {tareasAdaptadas.map((t) => (
@@ -268,7 +363,7 @@ export const DashboardTerapeuta = () => {
 
                 {t.reporte_tutor && (
                   <div style={{ marginTop: "0.6rem", background: "#ecfdf5", border: "1px solid #a7f3d0", padding: "0.65rem 0.85rem", borderRadius: "8px", fontSize: "0.825rem", color: "#065f46" }}>
-                    <strong>👨‍👩‍👦 Reporte recibido del Familiar / Tutor:</strong> "{t.reporte_tutor}" · Nivel de atención en casa: <strong>{t.nivel_atencion_hogar}</strong>
+                    <strong>Reporte recibido del Familiar / Tutor:</strong> "{t.reporte_tutor}" · Nivel de atención en casa: <strong>{t.nivel_atencion_hogar}</strong>
                   </div>
                 )}
               </div>
@@ -391,8 +486,11 @@ export const DashboardTerapeuta = () => {
                 aplicarPautaRapidaEnAdaptacion(estrategia);
               } else if (tareasPendientes.length > 0) {
                 abrirModalAdaptacion(tareasPendientes[0]);
+              } else {
+                emitirPautaClinicaEnVivo(`Pauta TDAH Sugerida por Terapeuta: ${estrategia}`, "TODOS");
               }
             }}
+            onEmitirRecomendacionRapida={(textoAbc) => emitirPautaClinicaEnVivo(textoAbc, "TODOS")}
           />
         </div>
       </div>

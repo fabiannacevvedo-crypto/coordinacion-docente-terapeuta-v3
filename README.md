@@ -1,10 +1,10 @@
-# 🌟 SincroAula — Plataforma de Coordinación Neuroeducativa y Terapéutica (Especializada en TDAH)
+# SincroAula — Plataforma de Coordinación Neuroeducativa y Terapéutica (Especializada en TDAH)
 
 **SincroAula** es una plataforma web interactiva y colaborativa diseñada para sincronizar en tiempo real el trabajo del **Rol Docente**, el **Rol Terapeuta (Acompañante Terapéutico)** y el **Familiar / Tutor**, con un enfoque especializado en el abordaje pedagógico, clínico y tecnológico del **Trastorno por Déficit de Atención e Hiperactividad (TDAH)**.
 
 ---
 
-## 🚀 Guía de Funcionalidades Implementadas y Cómo Favorecen a la Plataforma
+## Guía de Funcionalidades Implementadas y Cómo Favorecen a la Plataforma
 
 ### 1. Identidad Limpia y Registro Ágil por Rol (Sin Nombres Propios)
 - **Marca Unificada `SincroAula`**: Se eliminaron todas las referencias a versiones preliminares (`v3`), `Workspace Pitch` e identificadores institucionales/autores antiguos en toda la interfaz y en el pie de página (`Footer`).
@@ -37,7 +37,7 @@
 
 ---
 
-## 🧠 Fundamento Tecnológico y Terapéutico: El Acompañante Terapéutico en TDAH llevado a lo Digital
+## Fundamento Tecnológico y Terapéutico: El Acompañante Terapéutico en TDAH llevado a lo Digital
 
 | Práctica Clínica Actual en TDAH | Implementación Tecnológica en SincroAula | Cómo Favorece a la Coordinación |
 | :--- | :--- | :--- |
@@ -49,7 +49,7 @@
 
 ---
 
-## 🛠️ Tecnologías Utilizadas
+## Tecnologías Utilizadas
 
 1. **Backend (API RESTful & ORM)**:
    - **Node.js + Express**: Arquitectura modular separada en controladores (`auth`, `user`, `alumno`, `tarea`, `chat`, `presentacion`, `reporte`, `alerta`, `estrategia`, `admin`), rutas y middlewares.
@@ -63,7 +63,7 @@
 
 ---
 
-## 📖 Cómo Utilizar la Plataforma Paso a Paso
+## Cómo Utilizar la Plataforma Paso a Paso
 
 ### 1. Instalación y Puesta en Marcha
 ```bash

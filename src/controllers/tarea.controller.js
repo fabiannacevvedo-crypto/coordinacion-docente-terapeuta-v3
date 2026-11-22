@@ -199,7 +199,7 @@ export const adaptarTareaTerapeuta = async (req, res) => {
       emisor_id: req.user.id,
       emisor_rol: "TERAPEUTA",
       destinatario_rol: "TODOS",
-      contenido: `✅ Tarea adaptada para TDAH ("${tarea.titulo}") lista y enviada al Tutor Familiar. Pautas aplicadas: ${tarea.pautas_tdah_aplicadas}.`,
+      contenido: `Tarea adaptada para TDAH ("${tarea.titulo}") lista y enviada al Tutor Familiar. Pautas aplicadas: ${tarea.pautas_tdah_aplicadas}.`,
       tipo_mensaje: "PAUTA_TERAPEUTICA",
       tarea_id: tarea.id,
     });
@@ -262,7 +262,7 @@ export const reportarActividadTutor = async (req, res) => {
       emisor_id: req.user.id,
       emisor_rol: "FAMILIAR",
       destinatario_rol: dest === "AMBOS" ? "TODOS" : dest,
-      contenido: `📋 Reporte Familiar sobre la tarea "${tarea.titulo}" (Atención: ${
+      contenido: `Reporte Familiar sobre la tarea "${tarea.titulo}" (Atención: ${
         nivel_atencion_hogar || "ALTO_ENFOQUE"
       }): ${reporte_tutor}`,
       tipo_mensaje: "REPORTE_TAREA",

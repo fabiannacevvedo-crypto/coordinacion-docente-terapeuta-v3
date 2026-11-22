@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 import { QuickDemoButtons } from "../components/common/QuickDemoButtons.jsx";
-import { Lock, Mail, ArrowRight, AlertCircle, Eye, EyeOff, Sparkles } from "lucide-react";
+import { SincroAulaLogo } from "../components/common/SincroAulaLogo.jsx";
+import { Lock, Mail, ArrowRight, AlertCircle, Eye, EyeOff } from "lucide-react";
 
 export const Login = () => {
   const [email, setEmail] = useState("");
@@ -39,20 +40,8 @@ export const Login = () => {
     <div style={{ maxWidth: "480px", margin: "2.5rem auto" }}>
       <div className="card">
         <div style={{ textAlign: "center", marginBottom: "1.5rem" }}>
-          <div
-            style={{
-              width: "48px",
-              height: "48px",
-              borderRadius: "12px",
-              background: "linear-gradient(135deg, #2563eb 0%, #06b6d4 100%)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "white",
-              margin: "0 auto 0.75rem auto",
-            }}
-          >
-            <Sparkles size={24} />
+          <div style={{ display: "flex", justifyContent: "center", marginBottom: "0.75rem" }}>
+            <SincroAulaLogo size={52} showText={false} />
           </div>
           <h1 style={{ fontSize: "1.6rem", fontWeight: "900", color: "#0f172a" }}>Iniciar Sesión</h1>
           <p style={{ fontSize: "0.875rem", color: "#64748b" }}>

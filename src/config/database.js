@@ -34,10 +34,10 @@ export async function asegurarBaseDeDatosMySQL() {
       `CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;`
     );
     await conexion.end();
-    console.log(`✅ Base de datos MySQL verificada/creada exitosamente (\`${DB_NAME}\`)`);
+    console.log(`[OK] Base de datos MySQL verificada/creada exitosamente (\`${DB_NAME}\`)`);
   } catch (error) {
-    console.warn(`⚠️ Advertencia de conexión a MySQL (puerto ${DB_PORT}): ${error.message}`);
-    console.warn("💡 Para usar MySQL, asegúrese de iniciar WampServer. O utilice DB_DIALECT=sqlite para ejecución portátil instantánea.");
+    console.warn(`[WARN] Advertencia de conexión a MySQL (puerto ${DB_PORT}): ${error.message}`);
+    console.warn("[INFO] Para usar MySQL, asegúrese de iniciar WampServer. O utilice DB_DIALECT=sqlite para ejecución portátil instantánea.");
   }
 }
 
