@@ -1,9 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { X, Send, AlertTriangle, Sparkles, Volume2, ArrowRight } from "lucide-react";
 import { api } from "../../services/api.js";
 
 export const AlertaModal = ({ isOpen, onClose, alumnos = [], onAlertaCreada }) => {
   const [alumnoId, setAlumnoId] = useState(alumnos[0]?.id || "");
+
+  useEffect(() => {
+    if (alumnos.length > 0 && !alumnoId) {
+      setAlumnoId(alumnos[0].id);
+    }
+  }, [alumnos, alumnoId]);
   const [tipoAlerta, setTipoAlerta] = useState("DESREGULACION");
   const [mensaje, setMensaje] = useState("");
   const [nivelUrgencia, setNivelUrgencia] = useState("ALTA");

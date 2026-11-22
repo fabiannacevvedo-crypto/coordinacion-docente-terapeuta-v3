@@ -168,6 +168,51 @@ async function runTests() {
     }).then((r) => r.json());
     console.log("[OK] 9. Mensaje en Chat en Tiempo Real:", rChat.ok);
 
+    // 10. Tutor actualiza Sincronizador Matutino Pre-Aula (3 pautas) y Gravedad TDAH (Ficha Médica)
+    const rSyncPreAula = await fetch(`${baseUrl}/api/alumnos/${alumnoId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + tokenTutor,
+      },
+      body: JSON.stringify({
+        gravedad_tdah: "SEVERO",
+        ficha_medica: JSON.stringify({
+          profesional_emisor: "Neurología Infantil · Mat. 8412",
+          subtipo_dsm5: "TDAH Combinado",
+          ventana_atencional_min: 6,
+        }),
+        sincronizador_matutino: JSON.stringify({
+          descanso: "Sueño Intermitente",
+          disposicion: "Energía Alta",
+          preparacion: "Rutina con Pictogramas",
+          completado: true,
+        }),
+      }),
+    }).then((r) => r.json());
+    console.log(
+      "[OK] 10. Sincronizador Pre-Aula y Ficha Médica por Gravedad actualizados por Tutor:",
+      rSyncPreAula.ok,
+      "| Gravedad:",
+      rSyncPreAula.alumno?.gravedad_tdah
+    );
+
+    // 11. Docente calibra y guarda la Agenda Diaria Personalizada del alumno
+    const rAgenda = await fetch(`${baseUrl}/api/alumnos/${alumnoId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + tokenDocente,
+      },
+      body: JSON.stringify({
+        agenda_diaria: JSON.stringify([
+          { id: 1, hora: "08:15", bloque: "Anclaje Propioceptivo", duracion: "5 min", tipo: "PAUSA", completado: true },
+          { id: 2, hora: "08:25", bloque: "Misión Corta TDAH Severo", duracion: "6 min", tipo: "FOCO", completado: false },
+        ]),
+      }),
+    }).then((r) => r.json());
+    console.log("[OK] 11. Agenda Diaria Personalizada guardada por Docente:", rAgenda.ok);
+
     console.log("\n[EXITO] TODAS LAS PRUEBAS DE SINCROAULA PASARON AL 100%");
     process.exit(0);
   } catch (err) {

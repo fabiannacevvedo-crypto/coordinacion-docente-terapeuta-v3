@@ -172,6 +172,15 @@ export const DashboardDocente = () => {
     setTimeout(() => setMensajeExito(null), 4500);
   };
 
+  const focoPanel = (panelId, numEtapa) => {
+    setEtapaStepper(numEtapa);
+    setOrdenPaneles((prev) => {
+      if (!prev.includes(panelId)) return prev;
+      return [panelId, ...prev.filter((p) => p !== panelId)];
+    });
+    setPanelesExpandidos((prev) => ({ ...prev, [panelId]: true }));
+  };
+
   // Funciones para mover y desplazar paneles
   const moverPanel = (id, direccion) => {
     setOrdenPaneles((prev) => {
@@ -784,9 +793,16 @@ export const DashboardDocente = () => {
       <CircuitoTDAHStepper
         etapaActiva={etapaStepper}
         onSelectEtapa={(num) => {
-          setEtapaStepper(num);
-          if (num === 1) setModalNuevoAlumnoOpen(true);
-          if (num === 4) setModalNuevaTareaOpen(true);
+          if (num === 1) {
+            setEtapaStepper(1);
+            setModalNuevoAlumnoOpen(true);
+          } else if (num === 2 || num === 3) {
+            focoPanel("CONTEXTO_Y_AGENDA", num);
+          } else if (num === 4) {
+            focoPanel("PRESENTACIONES", 4);
+          } else if (num === 5 || num === 6) {
+            focoPanel("TAREAS_Y_ADAPTACION", num);
+          }
         }}
         alumno={alumnoSeleccionado}
         tieneSincronizadorHoy={Boolean(alumnoSeleccionado?.sincronizador_matutino)}

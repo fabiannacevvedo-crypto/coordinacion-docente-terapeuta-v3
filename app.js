@@ -7,7 +7,7 @@ import fs from "node:fs";
 import { fileURLToPath } from "node:url";
 
 import { asegurarBaseDeDatosMySQL, getActiveDialect } from "./src/config/database.js";
-import { sequelize, UserModel, TareaModel } from "./src/models/index.js";
+import { sequelize, UserModel, TareaModel, AlumnoModel } from "./src/models/index.js";
 import { runSeed } from "./src/seeds/seed.js";
 
 // Importación de rutas modulares (Arquitectura SincroAula)
@@ -62,12 +62,43 @@ app.use(cookieParser());
 
     // Sincronizar modelos y asociaciones
     await sequelize.sync();
+
+    // Asegurar columnas nuevas en tablas existentes (migración automática resiliente en SQLite/MySQL)
+    const queryInterface = sequelize.getQueryInterface();
+    const tableInfo = await queryInterface.describeTable("alumnos").catch(() => ({}));
+    if (!tableInfo.gravedad_tdah) {
+      await queryInterface.addColumn("alumnos", "gravedad_tdah", {
+        type: sequelize.Sequelize.STRING(30),
+        defaultValue: "MODERADO",
+        allowNull: true,
+      }).catch(() => {});
+    }
+    if (!tableInfo.ficha_medica) {
+      await queryInterface.addColumn("alumnos", "ficha_medica", {
+        type: sequelize.Sequelize.TEXT,
+        allowNull: true,
+      }).catch(() => {});
+    }
+    if (!tableInfo.sincronizador_matutino) {
+      await queryInterface.addColumn("alumnos", "sincronizador_matutino", {
+        type: sequelize.Sequelize.TEXT,
+        allowNull: true,
+      }).catch(() => {});
+    }
+    if (!tableInfo.agenda_diaria) {
+      await queryInterface.addColumn("alumnos", "agenda_diaria", {
+        type: sequelize.Sequelize.TEXT,
+        allowNull: true,
+      }).catch(() => {});
+    }
+
     console.log("[SincroAula] Modelos Sequelize sincronizados (Paranoid Soft Delete, Relaciones 1:1, 1:N, N:M)");
 
-    // Auto-siembra de datos de prueba si la base está recién creada o si faltan tareas TDAH
+    // Auto-siembra de datos de prueba si la base está recién creada o si faltan tareas/fichas médicas TDAH
     const cantidadUsuarios = await UserModel.count();
     const cantidadTareas = await TareaModel.count();
-    if (cantidadUsuarios === 0 || cantidadTareas === 0) {
+    const primerAlumno = await AlumnoModel.findOne();
+    if (cantidadUsuarios === 0 || cantidadTareas === 0 || (primerAlumno && !primerAlumno.ficha_medica)) {
       console.log("[SincroAula] Inicializando datos base y módulos neuroeducativos TDAH...");
       await runSeed();
     }
