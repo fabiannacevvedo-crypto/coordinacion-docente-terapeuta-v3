@@ -24,12 +24,32 @@ export const AlumnoModel = sequelize.define(
     diagnostico: {
       type: DataTypes.STRING(150),
       allowNull: true,
-      comment: "TEA, TDAH, Trastorno de la comunicación, Necesidad de acompañamiento pedagógico",
+      comment: "Diagnóstico profesional de TDAH y subtipo",
+    },
+    gravedad_tdah: {
+      type: DataTypes.ENUM("LEVE", "MODERADO", "SEVERO"),
+      defaultValue: "MODERADO",
+      comment: "Nivel de apoyo clínico requerido según DSM-5 (Leve, Moderado, Severo)",
+    },
+    ficha_medica: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      comment: "JSON o detalle de ficha médica profesional (neurólogo/psiquiatra, medicación, ventana de foco, comorbilidades)",
+    },
+    sincronizador_matutino: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      comment: "JSON con las 3 pautas matutinas contestadas por el familiar antes de entrar al aula (descanso, disposición, preparación)",
+    },
+    agenda_diaria: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      comment: "JSON con la agenda diaria personalizada por Docente y Terapeuta según el sincronizador matutino y gravedad TDAH",
     },
     sala_grado: {
       type: DataTypes.STRING(50),
       allowNull: false,
-      defaultValue: "Sala de 4 Años - Nivel Inicial",
+      defaultValue: "Sala de 5 Años - Nivel Inicial",
     },
     turno: {
       type: DataTypes.ENUM("MAÑANA", "TARDE", "JORNADA_COMPLETA"),
@@ -38,7 +58,7 @@ export const AlumnoModel = sequelize.define(
     semaforo_actual: {
       type: DataTypes.ENUM("VERDE", "AMARILLO", "ROJO"),
       defaultValue: "VERDE",
-      comment: "Estado sensorial/emocional actual en el aula",
+      comment: "Estado sensorial/ejecutivo actual en el aula",
     },
     observaciones: {
       type: DataTypes.TEXT,
@@ -58,7 +78,7 @@ export const AlumnoModel = sequelize.define(
   {
     tableName: "alumnos",
     timestamps: true,
-    paranoid: true, // Eliminación lógica
+    paranoid: true,
     underscored: true,
   }
 );

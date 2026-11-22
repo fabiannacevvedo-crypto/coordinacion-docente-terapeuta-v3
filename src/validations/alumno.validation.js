@@ -40,6 +40,19 @@ export const createAlumnoValidation = [
     .optional()
     .trim(),
 
+  body("gravedad_tdah")
+    .optional()
+    .isIn(["LEVE", "MODERADO", "SEVERO"]),
+
+  body("ficha_medica")
+    .optional(),
+
+  body("sincronizador_matutino")
+    .optional(),
+
+  body("agenda_diaria")
+    .optional(),
+
   body("observaciones")
     .optional()
     .trim(),
@@ -73,6 +86,19 @@ export const updateAlumnoValidation = [
   body("diagnostico")
     .optional()
     .trim(),
+
+  body("gravedad_tdah")
+    .optional()
+    .isIn(["LEVE", "MODERADO", "SEVERO"]),
+
+  body("ficha_medica")
+    .optional(),
+
+  body("sincronizador_matutino")
+    .optional(),
+
+  body("agenda_diaria")
+    .optional(),
 
   body("observaciones")
     .optional()
