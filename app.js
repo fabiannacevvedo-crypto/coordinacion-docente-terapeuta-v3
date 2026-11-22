@@ -7,10 +7,10 @@ import fs from "node:fs";
 import { fileURLToPath } from "node:url";
 
 import { asegurarBaseDeDatosMySQL, getActiveDialect } from "./src/config/database.js";
-import { sequelize, UserModel } from "./src/models/index.js";
+import { sequelize, UserModel, TareaModel } from "./src/models/index.js";
 import { runSeed } from "./src/seeds/seed.js";
 
-// Importación de rutas modulares (Arquitectura estándar IPF - SincroAula v3)
+// Importación de rutas modulares (Arquitectura SincroAula)
 import authRoutes from "./src/routes/auth.routes.js";
 import userRoutes from "./src/routes/user.routes.js";
 import alumnoRoutes from "./src/routes/alumno.routes.js";
@@ -18,6 +18,9 @@ import reporteRoutes from "./src/routes/reporte.routes.js";
 import alertaRoutes from "./src/routes/alerta.routes.js";
 import estrategiaRoutes from "./src/routes/estrategia.routes.js";
 import adminRoutes from "./src/routes/admin.routes.js";
+import tareaRoutes from "./src/routes/tarea.routes.js";
+import chatRoutes from "./src/routes/chat.routes.js";
+import presentacionRoutes from "./src/routes/presentacion.routes.js";
 
 dotenv.config();
 
@@ -34,7 +37,6 @@ const distPath = path.join(__dirname, "frontend", "dist");
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Permitir peticiones locales desde Vite (5173, etc.), herramientas de prueba o sin origen
       if (!origin || /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) {
         callback(null, true);
       } else {
@@ -62,10 +64,11 @@ app.use(cookieParser());
     await sequelize.sync();
     console.log("📦 Modelos Sequelize sincronizados (Paranoid Soft Delete, Relaciones 1:1, 1:N, N:M)");
 
-    // Auto-siembra de datos de prueba si la base está recién creada
+    // Auto-siembra de datos de prueba si la base está recién creada o si faltan tareas TDAH
     const cantidadUsuarios = await UserModel.count();
-    if (cantidadUsuarios === 0) {
-      console.log("ℹ️ Base de datos vacía detectada. Ejecutando siembra inicial automática...");
+    const cantidadTareas = await TareaModel.count();
+    if (cantidadUsuarios === 0 || cantidadTareas === 0) {
+      console.log("ℹ️ Inicializando datos base y módulos neuroeducativos TDAH...");
       await runSeed();
     }
   } catch (error) {
@@ -83,15 +86,18 @@ app.use("/api/reportes", reporteRoutes);
 app.use("/api/alertas", alertaRoutes);
 app.use("/api/estrategias", estrategiaRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/tareas", tareaRoutes);
+app.use("/api/chat", chatRoutes);
+app.use("/api/presentaciones", presentacionRoutes);
 
 // Endpoint de diagnóstico del sistema
 app.get("/api/health", (req, res) => {
   res.json({
     status: "online",
-    sistema: "SincroAula v3 - Coordinación Docente-Terapeuta",
-    version: "3.0.0",
+    sistema: "SincroAula - Coordinación Docente, Terapeuta y Familia",
+    version: "1.0.0",
     dialecto_bd: getActiveDialect(),
-    instituto: "Instituto Politécnico Formosa",
+    enfoque: "Educación Inclusiva y Abordaje Neuroeducativo TDAH",
     timestamp: new Date().toISOString(),
   });
 });
@@ -119,7 +125,7 @@ app.get("/{*splat}", (req, res, next) => {
     <html lang="es">
     <head>
       <meta charset="UTF-8" />
-      <title>SincroAula v3 - Servidor Activo</title>
+      <title>SincroAula - Servidor Activo</title>
       <style>
         body { font-family: system-ui, -apple-system, sans-serif; background: #0f172a; color: white; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 1.5rem; }
         .card { max-width: 620px; background: #1e293b; padding: 2.5rem; border-radius: 16px; border: 1px solid #334155; box-shadow: 0 20px 40px rgba(0,0,0,0.4); text-align: center; }
@@ -133,10 +139,10 @@ app.get("/{*splat}", (req, res, next) => {
     </head>
     <body>
       <div class="card">
-        <div class="badge">API BACKEND SINCROAULA V3</div>
+        <div class="badge">API BACKEND SINCROAULA</div>
         <h1>Servidor Express Activo</h1>
-        <p>El backend de <strong>SincroAula v3</strong> está corriendo correctamente en el puerto <code>${PORT}</code>.</p>
-        <p>Para visualizar la interfaz interactiva de React con diseño inspirado en Pitch, ejecute:</p>
+        <p>El backend de <strong>SincroAula</strong> está corriendo correctamente en el puerto <code>${PORT}</code>.</p>
+        <p>Para visualizar la interfaz interactiva de React, ejecute:</p>
         <p><code>npm run dev</code> en la raíz del proyecto, o <code>npm run build:frontend</code> para compilar.</p>
         <a href="/api/health" class="btn">Ver Estado del Sistema (/api/health)</a>
       </div>
@@ -157,7 +163,7 @@ app.use((err, req, res, next) => {
 
 app.listen(PORT, () => {
   console.log(`\n======================================================`);
-  console.log(`🌟 SincroAula v3 corriendo en http://localhost:${PORT}`);
+  console.log(`🌟 SincroAula corriendo en http://localhost:${PORT}`);
   console.log(`📚 Documentación API y Healthcheck en http://localhost:${PORT}/api/health`);
   console.log(`======================================================\n`);
 });

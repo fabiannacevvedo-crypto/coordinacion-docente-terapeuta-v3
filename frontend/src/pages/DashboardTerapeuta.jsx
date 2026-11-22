@@ -4,37 +4,49 @@ import { useAuth } from "../context/AuthContext.jsx";
 import { api } from "../services/api.js";
 import { SemaforoBadge } from "../components/common/SemaforoBadge.jsx";
 import { SensoryToolbox } from "../components/terapeuta/SensoryToolbox.jsx";
+import { ChatCoordinacion } from "../components/common/ChatCoordinacion.jsx";
 import {
   Stethoscope,
-  Wind,
   Bell,
   CheckCircle2,
-  AlertTriangle,
-  FileText,
-  Sparkles,
   ArrowRight,
-  TrendingUp,
+  Brain,
+  ClipboardCheck,
+  Sparkles,
+  Send,
+  Sliders,
 } from "lucide-react";
 
 export const DashboardTerapeuta = () => {
   const { user } = useAuth();
   const [alumnos, setAlumnos] = useState([]);
   const [alertas, setAlertas] = useState([]);
-  const [reportes, setReportes] = useState([]);
+  const [tareas, setTareas] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [mensajeExito, setMensajeExito] = useState(null);
+
+  // Modal de Adaptación de Tarea TDAH
+  const [tareaSeleccionada, setTareaSeleccionada] = useState(null);
+  const [formAdaptacion, setFormAdaptacion] = useState({
+    subtipo_tdah_objetivo: "TDAH Combinado (Inatención + Impulsividad)",
+    pautas_tdah_aplicadas:
+      "Micro-segmentación en 3 pasos cortos (Chunking) + Temporizador Visual Pomodoro (5 min) + Pausa Kinestésica",
+    adaptacion_terapeuta: "",
+    recursos_apoyo: "Secuencia visual paso a paso + Reloj visual de 5 min + Tablero de estrellas",
+  });
 
   const cargarDatos = async () => {
     try {
       setLoading(true);
-      const [resAlumnos, resAlertas, resReportes] = await Promise.all([
+      const [resAlumnos, resAlertas, resTareas] = await Promise.all([
         api.getAlumnos(),
         api.getAlertas(),
-        api.getReportes(),
+        api.getTareas(),
       ]);
 
       if (resAlumnos.ok) setAlumnos(resAlumnos.alumnos);
       if (resAlertas.ok) setAlertas(resAlertas.alertas);
-      if (resReportes.ok) setReportes(resReportes.reportes);
+      if (resTareas.ok) setTareas(resTareas.tareas);
     } catch (e) {
       console.error("Error cargando gabinete terapeuta:", e);
     } finally {
@@ -57,31 +69,223 @@ export const DashboardTerapeuta = () => {
     }
   };
 
+  const abrirModalAdaptacion = (tarea) => {
+    setTareaSeleccionada(tarea);
+    const textoSugerido =
+      tarea.adaptacion_terapeuta ||
+      `🎯 ADAPTACIÓN NEUROEDUCATIVA TDAH PARA "${tarea.titulo}":\n• PASO 1 (Preparación - 2 min): Despejar la mesa dejando únicamente el material de esta actividad para evitar distractores visuales.\n• PASO 2 (Misión Corta - 5 min): Realizar la primera mitad de la consigna ("${tarea.consigna_original.substring(
+        0,
+        70
+      )}...") usando el Temporizador Visual.\n• PAUSA KINESTÉSICA (2 min): Estirar los brazos o caminar antes del último paso.\n• PASO 3 (Cierre y Logro - 4 min): Completar la actividad y otorgar 1 estrella inmediata en el tablero de Economía de Fichas.`;
+
+    setFormAdaptacion({
+      subtipo_tdah_objetivo:
+        tarea.subtipo_tdah_objetivo || "TDAH Combinado (Inatención + Impulsividad)",
+      pautas_tdah_aplicadas:
+        tarea.pautas_tdah_aplicadas ||
+        "Micro-segmentación en 3 pasos cortos (Chunking) + Temporizador Visual Pomodoro + Pausa Kinestésica",
+      adaptacion_terapeuta: textoSugerido,
+      recursos_apoyo:
+        tarea.recursos_apoyo ||
+        "Temporizador visual de 5 min + Tarjetas de Autoinstrucciones de Meichenbaum",
+    });
+  };
+
+  const aplicarPautaRapidaEnAdaptacion = (pauta) => {
+    setFormAdaptacion((prev) => ({
+      ...prev,
+      pautas_tdah_aplicadas: prev.pautas_tdah_aplicadas.includes(pauta)
+        ? prev.pautas_tdah_aplicadas
+        : `${prev.pautas_tdah_aplicadas} + ${pauta}`,
+    }));
+  };
+
+  const handleGuardarAdaptacion = async (e) => {
+    e.preventDefault();
+    if (!tareaSeleccionada) return;
+    try {
+      const res = await api.adaptarTarea(tareaSeleccionada.id, formAdaptacion);
+      if (res.ok) {
+        setTareaSeleccionada(null);
+        setMensajeExito(
+          "¡Tarea adaptada con pautas TDAH y enviada exitosamente al Portal del Familiar / Tutor!"
+        );
+        setTimeout(() => setMensajeExito(null), 5000);
+        cargarDatos();
+      }
+    } catch (err) {
+      alert("Error al guardar adaptación: " + err.message);
+    }
+  };
+
+  const tareasPendientes = tareas.filter((t) => t.estado === "PENDIENTE_TERAPEUTA");
+  const tareasAdaptadas = tareas.filter((t) => t.estado !== "PENDIENTE_TERAPEUTA");
+
   return (
     <div>
       {/* Header Gabinete */}
-      <div style={{ marginBottom: "1.75rem" }}>
+      <div style={{ marginBottom: "1.5rem" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-          <span className="badge badge-terapeuta">Espacio Terapéutico y AT</span>
-          <span style={{ fontSize: "0.8rem", color: "#64748b" }}>Abordaje Clínico-Sensorial</span>
+          <span className="badge badge-terapeuta">Rol Terapeuta / AT</span>
+          <span style={{ fontSize: "0.8rem", color: "#64748b" }}>
+            Adaptación Curricular TDAH y Regulación Ejecutiva
+          </span>
         </div>
         <h1 style={{ fontSize: "1.85rem", fontWeight: "900", color: "#0f172a", marginTop: "0.25rem" }}>
-          Gabinete del Acompañante Terapéutico
+          Gabinete Terapéutico y Adaptación de Tareas TDAH
         </h1>
         <p style={{ fontSize: "0.875rem", color: "#64748b" }}>
-          Lic./AT {user?.nombre} {user?.apellido} · Pautas sensoriales y seguimiento conductual
+          Recibe las tareas del Rol Docente, adáptalas según las pautas específicas de TDAH de cada alumno y envíalas al Familiar / Tutor
         </p>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: "1.5rem", marginBottom: "2rem" }}>
-        {/* Columna Izquierda: Alumnos y Alertas de Aula */}
+      {mensajeExito && (
+        <div className="alert alert-success" style={{ marginBottom: "1.5rem" }}>
+          <CheckCircle2 size={18} />
+          <span>{mensajeExito}</span>
+        </div>
+      )}
+
+      {/* SECCIÓN PRINCIPAL: BANDEJA DE TAREAS ENVIADAS POR EL DOCENTE PARA ADAPTACIÓN TDAH */}
+      <div className="card" style={{ borderTop: "4px solid var(--terapeuta-color)", marginBottom: "2rem" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "1rem", marginBottom: "1.25rem" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+            <div style={{ background: "var(--terapeuta-bg)", padding: "0.55rem", borderRadius: "10px", color: "var(--terapeuta-color)" }}>
+              <ClipboardCheck size={22} />
+            </div>
+            <div>
+              <h2 style={{ fontSize: "1.25rem", fontWeight: "900", color: "#0f172a" }}>
+                Bandeja de Tareas para Adaptar a TDAH (Previo al Envío al Tutor)
+              </h2>
+              <p style={{ fontSize: "0.8rem", color: "#64748b" }}>
+                Adapta las consignas aplicando micro-segmentación, apoyos visuales y tiempos de enfoque según el requerimiento del alumno
+              </p>
+            </div>
+          </div>
+
+          <span className="badge" style={{ background: "#fef3c7", color: "#92400e", fontSize: "0.8rem" }}>
+            {tareasPendientes.length} Pendientes de Adaptar
+          </span>
+        </div>
+
+        {/* Tareas Pendientes de Adaptar */}
+        {tareasPendientes.length > 0 && (
+          <div style={{ marginBottom: "1.5rem" }}>
+            <div style={{ fontSize: "0.85rem", fontWeight: "800", color: "#b45309", marginBottom: "0.6rem" }}>
+              🔔 Tareas Recibidas del Rol Docente que Requieren tu Adaptación TDAH:
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+              {tareasPendientes.map((t) => (
+                <div
+                  key={t.id}
+                  style={{
+                    background: "#fffbeb",
+                    border: "1px solid #fde68a",
+                    borderRadius: "12px",
+                    padding: "1rem 1.25rem",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    flexWrap: "wrap",
+                    gap: "1rem",
+                  }}
+                >
+                  <div style={{ flex: 1, minWidth: "260px" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.3rem" }}>
+                      <span style={{ fontWeight: "800", fontSize: "1rem", color: "#0f172a" }}>{t.titulo}</span>
+                      <span className="badge" style={{ background: "#fef3c7", color: "#92400e" }}>
+                        {t.tipo_asignacion}
+                      </span>
+                    </div>
+                    <div style={{ fontSize: "0.825rem", color: "#475569", marginBottom: "0.3rem" }}>
+                      <strong>Alumno:</strong> {t.alumno?.nombre} {t.alumno?.apellido} ·{" "}
+                      <strong>Diagnóstico:</strong> {t.alumno?.diagnostico}
+                    </div>
+                    <div style={{ fontSize: "0.85rem", color: "#1e293b", background: "white", padding: "0.6rem 0.8rem", borderRadius: "8px", border: "1px solid #fde68a" }}>
+                      <strong>Consigna Original del Docente:</strong> {t.consigna_original}
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => abrirModalAdaptacion(t)}
+                    className="btn btn-primary"
+                    style={{ background: "var(--terapeuta-color)" }}
+                  >
+                    <Sliders size={16} />
+                    <span>Adaptar con Pautas TDAH y Enviar al Tutor</span>
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Historial de Tareas Ya Adaptadas y Respuestas del Tutor */}
+        <div>
+          <div style={{ fontSize: "0.85rem", fontWeight: "800", color: "#334155", marginBottom: "0.6rem" }}>
+            ✅ Tareas Adaptadas y Enviadas al Familiar / Tutor ({tareasAdaptadas.length}):
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+            {tareasAdaptadas.map((t) => (
+              <div
+                key={t.id}
+                style={{
+                  background: "#f8fafc",
+                  border: "1px solid #e2e8f0",
+                  borderRadius: "12px",
+                  padding: "1rem 1.25rem",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "0.5rem", marginBottom: "0.4rem" }}>
+                  <div>
+                    <strong style={{ color: "#0f172a" }}>{t.titulo}</strong>{" "}
+                    <span style={{ fontSize: "0.8rem", color: "#64748b" }}>
+                      (Alumno: {t.alumno?.nombre} {t.alumno?.apellido})
+                    </span>
+                  </div>
+                  <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                    <span className="badge" style={{ background: "#ede9fe", color: "#6d28d9" }}>
+                      {t.estado === "COMPLETADA_POR_TUTOR" ? "Completada en Casa" : "Enviada al Tutor"}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => abrirModalAdaptacion(t)}
+                      className="btn btn-secondary btn-sm"
+                      style={{ fontSize: "0.75rem" }}
+                    >
+                      Editar Adaptación
+                    </button>
+                  </div>
+                </div>
+
+                <div style={{ fontSize: "0.8rem", color: "#6d28d9", fontWeight: "700", marginBottom: "0.3rem" }}>
+                  Pautas TDAH Aplicadas: {t.pautas_tdah_aplicadas}
+                </div>
+                <div style={{ fontSize: "0.825rem", color: "#334155", whiteSpace: "pre-line", background: "white", padding: "0.65rem", borderRadius: "8px", border: "1px solid #e2e8f0" }}>
+                  {t.adaptacion_terapeuta}
+                </div>
+
+                {t.reporte_tutor && (
+                  <div style={{ marginTop: "0.6rem", background: "#ecfdf5", border: "1px solid #a7f3d0", padding: "0.65rem 0.85rem", borderRadius: "8px", fontSize: "0.825rem", color: "#065f46" }}>
+                    <strong>👨‍👩‍👦 Reporte recibido del Familiar / Tutor:</strong> "{t.reporte_tutor}" · Nivel de atención en casa: <strong>{t.nivel_atencion_hogar}</strong>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1.15fr 0.85fr", gap: "1.5rem", marginBottom: "2rem" }}>
+        {/* Columna Izquierda: Alertas de Aula y Alumnos */}
         <div>
           {/* Alertas Recibidas desde el Aula */}
           <div className="card" style={{ marginBottom: "1.5rem" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1rem" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                 <Bell size={20} color="var(--terapeuta-color)" />
-                <h2 style={{ fontSize: "1.2rem", fontWeight: "800" }}>Alertas Emitidas desde la Sala</h2>
+                <h2 style={{ fontSize: "1.2rem", fontWeight: "800" }}>Alertas Emitidas desde el Aula</h2>
               </div>
               <span className="badge" style={{ background: "#f5f3ff", color: "var(--terapeuta-color)" }}>
                 {alertas.filter((a) => a.estado === "PENDIENTE").length} Pendientes
@@ -94,7 +298,7 @@ export const DashboardTerapeuta = () => {
                   No hay alertas registradas en este momento.
                 </div>
               ) : (
-                alertas.slice(0, 4).map((al) => (
+                alertas.slice(0, 5).map((al) => (
                   <div
                     key={al.id}
                     style={{
@@ -114,7 +318,7 @@ export const DashboardTerapeuta = () => {
                       </div>
                       <div style={{ fontSize: "0.825rem", color: "#475569" }}>{al.mensaje}</div>
                       <div style={{ fontSize: "0.725rem", color: "#94a3b8", marginTop: "0.2rem" }}>
-                        Emitido por Prof. {al.emisor?.nombre} {al.emisor?.apellido}
+                        Emitido por: Rol Docente
                       </div>
                     </div>
 
@@ -141,7 +345,7 @@ export const DashboardTerapeuta = () => {
           {/* Casos Clínicos Asignados */}
           <div className="card">
             <h2 style={{ fontSize: "1.2rem", fontWeight: "800", marginBottom: "1rem" }}>
-              Alumnos en Seguimiento Terapéutico
+              Alumnos en Seguimiento Terapéutico TDAH
             </h2>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
@@ -170,7 +374,7 @@ export const DashboardTerapeuta = () => {
                   </div>
 
                   <Link to={`/alumnos/${alumno.id}`} className="btn btn-secondary btn-sm">
-                    <span>Ficha Clínica</span>
+                    <span>Legajo Clínico</span>
                     <ArrowRight size={14} />
                   </Link>
                 </div>
@@ -179,11 +383,134 @@ export const DashboardTerapeuta = () => {
           </div>
         </div>
 
-        {/* Columna Derecha: Caja de Herramientas Sensoriales */}
+        {/* Columna Derecha: Caja de Herramientas Sensoriales y Ejecutivas TDAH Expandida */}
         <div>
-          <SensoryToolbox />
+          <SensoryToolbox
+            onEstrategiaSeleccionada={(estrategia) => {
+              if (tareaSeleccionada) {
+                aplicarPautaRapidaEnAdaptacion(estrategia);
+              } else if (tareasPendientes.length > 0) {
+                abrirModalAdaptacion(tareasPendientes[0]);
+              }
+            }}
+          />
         </div>
       </div>
+
+      {/* Chat en Tiempo Real con Docente y Tutor Familiar */}
+      <ChatCoordinacion
+        alumnos={alumnos}
+        rolActual="TERAPEUTA"
+        titulo="Canal Clínico-Pedagógico en Tiempo Real (Docente · Terapeuta · Tutor)"
+      />
+
+      {/* MODAL PARA ADAPTAR TAREA SEGÚN PAUTAS ESPECÍFICAS TDAH */}
+      {tareaSeleccionada && (
+        <div className="modal-overlay">
+          <div className="modal-content" style={{ maxWidth: "680px" }}>
+            <h3 style={{ fontSize: "1.25rem", fontWeight: "900", color: "#0f172a", marginBottom: "0.35rem" }}>
+              Adaptación Terapéutica TDAH de la Tarea
+            </h3>
+            <p style={{ fontSize: "0.825rem", color: "#64748b", marginBottom: "1rem" }}>
+              Alumno: <strong>{tareaSeleccionada.alumno?.nombre} {tareaSeleccionada.alumno?.apellido}</strong> ·{" "}
+              {tareaSeleccionada.alumno?.diagnostico}
+            </p>
+
+            <div style={{ background: "#f1f5f9", padding: "0.85rem", borderRadius: "10px", marginBottom: "1rem", fontSize: "0.85rem" }}>
+              <strong>Consigna Original del Rol Docente ("{tareaSeleccionada.titulo}"):</strong>
+              <p style={{ color: "#334155", marginTop: "0.25rem" }}>{tareaSeleccionada.consigna_original}</p>
+            </div>
+
+            <form onSubmit={handleGuardarAdaptacion}>
+              <div className="form-group">
+                <label className="form-label">Pautas Específicas de TDAH a Aplicar (Clic para agregar)</label>
+                <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap", marginBottom: "0.5rem" }}>
+                  {[
+                    "Micro-segmentación en 3 pasos cortos (Chunking)",
+                    "Temporizador Visual Pomodoro (5 min)",
+                    "Pausa Kinestésica de descarga motriz",
+                    "Eliminación de estímulos distractores visuales",
+                    "Autoinstrucciones de Meichenbaum",
+                    "Refuerzo con Economía de Fichas",
+                  ].map((p) => (
+                    <button
+                      key={p}
+                      type="button"
+                      onClick={() => aplicarPautaRapidaEnAdaptacion(p)}
+                      style={{
+                        fontSize: "0.72rem",
+                        padding: "0.25rem 0.6rem",
+                        borderRadius: "999px",
+                        border: "1px solid #c4b5fd",
+                        background: "#f5f3ff",
+                        color: "#5b21b6",
+                        cursor: "pointer",
+                        fontWeight: "600",
+                      }}
+                    >
+                      + {p}
+                    </button>
+                  ))}
+                </div>
+                <input
+                  type="text"
+                  required
+                  value={formAdaptacion.pautas_tdah_aplicadas}
+                  onChange={(e) =>
+                    setFormAdaptacion({ ...formAdaptacion, pautas_tdah_aplicadas: e.target.value })
+                  }
+                  className="form-input"
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">
+                  Consigna Adaptada Paso a Paso (Lo que verá el Familiar / Tutor en casa)
+                </label>
+                <textarea
+                  rows={6}
+                  required
+                  value={formAdaptacion.adaptacion_terapeuta}
+                  onChange={(e) =>
+                    setFormAdaptacion({ ...formAdaptacion, adaptacion_terapeuta: e.target.value })
+                  }
+                  className="form-textarea"
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Recursos de Apoyo Sugeridos para el Hogar</label>
+                <input
+                  type="text"
+                  value={formAdaptacion.recursos_apoyo}
+                  onChange={(e) =>
+                    setFormAdaptacion({ ...formAdaptacion, recursos_apoyo: e.target.value })
+                  }
+                  className="form-input"
+                />
+              </div>
+
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem" }}>
+                <button
+                  type="button"
+                  onClick={() => setTareaSeleccionada(null)}
+                  className="btn btn-secondary"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  style={{ background: "var(--terapeuta-color)" }}
+                >
+                  <Send size={16} />
+                  <span>Guardar Adaptación TDAH y Enviar al Tutor</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

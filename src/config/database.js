@@ -10,7 +10,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const DB_DIALECT = (process.env.DB_DIALECT || "sqlite").toLowerCase();
-const DB_NAME = process.env.DB_NAME || "rednec_sincroaula_v3";
+const DB_NAME = process.env.DB_NAME || "sincroaula_db";
 const DB_USER = process.env.DB_USER || "root";
 const DB_PASS = process.env.DB_PASS || "";
 const DB_HOST = process.env.DB_HOST || "localhost";
@@ -62,7 +62,7 @@ if (DB_DIALECT === "mysql") {
   });
 } else {
   // SQLite: modo portátil y resiliente con archivo persistente en la raíz del proyecto
-  const sqliteStorage = path.resolve(__dirname, "../../rednec_sincroaula_v3.sqlite");
+  const sqliteStorage = path.resolve(__dirname, "../../sincroaula.sqlite");
   sequelizeInstance = new Sequelize({
     dialect: "sqlite",
     storage: sqliteStorage,

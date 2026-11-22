@@ -1,7 +1,7 @@
 {
-  "name": "coordinacion-docente-terapeuta-v3",
-  "version": "3.0.0",
-  "description": "SincroAula v3: Plataforma colaborativa e interactiva para la coordinación docente-terapeuta en nivel inicial (Instituto Politécnico Formosa)",
+  "name": "sincroaula",
+  "version": "1.0.0",
+  "description": "SincroAula: Plataforma colaborativa e interactiva para la coordinación entre docente, terapeuta y tutor familiar con enfoque en TDAH",
   "main": "app.js",
   "type": "module",
   "scripts": {
@@ -22,9 +22,9 @@
     "sequelize",
     "express-validator",
     "react",
-    "pitch-style"
+    "tdah"
   ],
-  "author": "Acevedo Cristian (Equipo RedNeC - Instituto Politécnico Formosa)",
+  "author": "SincroAula - Innovación Neuroeducativa",
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",

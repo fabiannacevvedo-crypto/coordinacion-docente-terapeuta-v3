@@ -1,14 +1,13 @@
 const API_URL = import.meta.env.VITE_API_URL || "/api";
 
 /**
- * Cliente HTTP unificado para interactuar con la API RESTful de SincroAula v3
+ * Cliente HTTP unificado para interactuar con la API RESTful de SincroAula
  */
 async function request(endpoint, options = {}) {
   const defaultHeaders = {
     "Content-Type": "application/json",
   };
 
-  // Obtener token almacenado si existe
   const token = localStorage.getItem("sincroaula_token");
   if (token) {
     defaultHeaders["Authorization"] = `Bearer ${token}`;
@@ -20,7 +19,7 @@ async function request(endpoint, options = {}) {
       ...defaultHeaders,
       ...options.headers,
     },
-    credentials: "include", // Enviar y recibir cookies HttpOnly
+    credentials: "include",
   };
 
   if (options.body && typeof options.body === "object" && !(options.body instanceof FormData)) {
@@ -70,6 +69,21 @@ export const api = {
   deleteAlumno: (id) => request(`/alumnos/${id}`, { method: "DELETE" }),
   vincularUsuario: (id, vinculoData) => request(`/alumnos/${id}/vincular`, { method: "POST", body: vinculoData }),
 
+  // Tareas con Circuito Docente -> Terapeuta (Adaptación TDAH) -> Tutor Familiar
+  getTareas: (query = "") => request(`/tareas${query ? `?${query}` : ""}`),
+  createTarea: (tareaData) => request("/tareas", { method: "POST", body: tareaData }),
+  adaptarTarea: (id, adaptacionData) => request(`/tareas/${id}/adaptar`, { method: "PUT", body: adaptacionData }),
+  reportarTareaTutor: (id, reporteData) => request(`/tareas/${id}/reporte-tutor`, { method: "PUT", body: reporteData }),
+
+  // Chat Multicanal en Tiempo Real
+  getMensajesChat: (query = "") => request(`/chat${query ? `?${query}` : ""}`),
+  enviarMensajeChat: (msgData) => request("/chat", { method: "POST", body: msgData }),
+
+  // Presentaciones Adaptadas para el Alumno (Sección Docente)
+  getPresentaciones: (query = "") => request(`/presentaciones${query ? `?${query}` : ""}`),
+  createPresentacion: (presData) => request("/presentaciones", { method: "POST", body: presData }),
+  deletePresentacion: (id) => request(`/presentaciones/${id}`, { method: "DELETE" }),
+
   // Reportes y Bitácora Diaria
   getReportes: (query = "") => request(`/reportes${query ? `?${query}` : ""}`),
   getReporteById: (id) => request(`/reportes/${id}`),
@@ -89,7 +103,7 @@ export const api = {
   // Panel Administrativo
   getEstadisticas: () => request("/admin/estadisticas"),
   resolverVerificacion: (userId, data) => request(`/admin/usuarios/${userId}/verificacion`, { method: "PUT", body: data }),
-  
+
   // Health
   getHealth: () => request("/health"),
 };
