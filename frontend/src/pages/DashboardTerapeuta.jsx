@@ -103,6 +103,15 @@ export const DashboardTerapeuta = () => {
     setTimeout(() => setMensajeExito(null), 4500);
   };
 
+  const focoPanel = (panelId, numEtapa) => {
+    setEtapaStepper(numEtapa);
+    setOrdenPaneles((prev) => {
+      if (!prev.includes(panelId)) return prev;
+      return [panelId, ...prev.filter((p) => p !== panelId)];
+    });
+    setPanelesExpandidos((prev) => ({ ...prev, [panelId]: true }));
+  };
+
   // Funciones para mover y desplazar paneles
   const moverPanel = (id, direccion) => {
     setOrdenPaneles((prev) => {
@@ -543,9 +552,17 @@ export const DashboardTerapeuta = () => {
       <CircuitoTDAHStepper
         etapaActiva={etapaStepper}
         onSelectEtapa={(num) => {
-          setEtapaStepper(num);
-          if (num === 5 && tareasPendientes.length > 0) {
-            abrirModalAdaptacion(tareasPendientes[0]);
+          if (num === 1 || num === 2 || num === 3) {
+            focoPanel("FICHA_SINCRONIZADOR_AGENDA", num);
+          } else if (num === 4) {
+            focoPanel("REGULADOR_TERAPEUTA", 4);
+          } else if (num === 5) {
+            focoPanel("BANDEJA_ADAPTACION", 5);
+            if (tareasPendientes.length > 0) {
+              abrirModalAdaptacion(tareasPendientes[0]);
+            }
+          } else if (num === 6) {
+            focoPanel("BANDEJA_ADAPTACION", 6);
           }
         }}
         alumno={alumnoSeleccionado}

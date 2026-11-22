@@ -149,6 +149,15 @@ export const DashboardFamiliar = () => {
     setTimeout(() => setMensajeExito(null), 4500);
   };
 
+  const focoPanel = (panelId, numEtapa) => {
+    setEtapaStepper(numEtapa);
+    setOrdenPaneles((prev) => {
+      if (!prev.includes(panelId)) return prev;
+      return [panelId, ...prev.filter((p) => p !== panelId)];
+    });
+    setPanelesExpandidos((prev) => ({ ...prev, [panelId]: true }));
+  };
+
   // Funciones para mover y desplazar paneles
   const moverPanel = (id, direccion) => {
     setOrdenPaneles((prev) => {
@@ -376,6 +385,17 @@ export const DashboardFamiliar = () => {
             onDragStart={handleDragStart}
             onDragOver={() => {}}
             onDrop={handleDrop}
+            headerRight={
+              <button
+                type="button"
+                onClick={handleConfirmarSincronizadorPreAula}
+                className="btn btn-primary btn-sm"
+                style={{ background: "#2563eb", fontSize: "0.73rem" }}
+              >
+                <CheckCircle2 size={13} />
+                <span>Guardar Ficha</span>
+              </button>
+            }
             explicacionMedica={
               <ExplicacionMedicaToggle
                 rolActual="FAMILIAR"
@@ -877,8 +897,13 @@ export const DashboardFamiliar = () => {
       <CircuitoTDAHStepper
         etapaActiva={etapaStepper}
         onSelectEtapa={(num) => {
-          setEtapaStepper(num);
-          if (num === 2) setMostrarGateMatutino(true);
+          if (num === 1) focoPanel("FICHA_MEDICA", 1);
+          else if (num === 2) {
+            setEtapaStepper(2);
+            setMostrarGateMatutino(true);
+          } else if (num === 3) focoPanel("AGENDA", 3);
+          else if (num === 4) focoPanel("PRESENTACIONES", 4);
+          else if (num === 5 || num === 6) focoPanel("TAREAS_ADAPTADAS", num);
         }}
         alumno={alumno}
         tieneSincronizadorHoy={sincronizadorCompletadoHoy || Boolean(alumno?.sincronizador_matutino)}
