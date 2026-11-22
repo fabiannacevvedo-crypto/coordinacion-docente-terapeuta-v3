@@ -2,14 +2,14 @@ async function runTests() {
   const testPort = process.env.TEST_PORT || "3099";
   process.env.PORT = testPort;
   const baseUrl = `http://localhost:${testPort}`;
-  console.log(`🧪 Iniciando pruebas E2E integrales de SincroAula en ${baseUrl}...`);
+  console.log(`[TEST] Iniciando pruebas E2E integrales de SincroAula en ${baseUrl}...`);
   await import("./app.js");
   await new Promise((r) => setTimeout(r, 2500));
 
   try {
-    // 1. Healthcheck (Verificando que sólo aparece SincroAula sin v3)
+    // 1. Healthcheck
     const rHealth = await fetch(`${baseUrl}/api/health`).then((r) => r.json());
-    console.log("✅ 1. Healthcheck:", rHealth.sistema, "| Enfoque:", rHealth.enfoque);
+    console.log("[OK] 1. Healthcheck:", rHealth.sistema, "| Enfoque:", rHealth.enfoque);
 
     // 2. Login Rol Docente
     const rLoginDocente = await fetch(`${baseUrl}/api/auth/login`, {
@@ -18,7 +18,7 @@ async function runTests() {
       body: JSON.stringify({ email: "lucia.docente@sincroaula.edu.ar", password: "docente123" }),
     }).then((r) => r.json());
     console.log(
-      "✅ 2. Login Rol Docente:",
+      "[OK] 2. Login Rol Docente:",
       rLoginDocente.ok,
       `${rLoginDocente.usuario?.nombre} ${rLoginDocente.usuario?.apellido}`,
       "| Rol:",
@@ -38,7 +38,7 @@ async function runTests() {
       }),
     }).then((r) => r.json());
     console.log(
-      "✅ 3. Registro por Rol Exitoso:",
+      "[OK] 3. Registro por Rol Exitoso:",
       rReg.ok,
       `${rReg.usuario?.nombre} ${rReg.usuario?.apellido}`,
       "| Email:",
@@ -61,7 +61,7 @@ async function runTests() {
         diagnostico: "TDAH Presentación Combinada",
       }),
     }).then((r) => r.json());
-    console.log("✅ 4. Docente registra alumno:", rNuevoAlumno.ok, rNuevoAlumno.alumno?.nombre);
+    console.log("[OK] 4. Docente registra alumno:", rNuevoAlumno.ok, rNuevoAlumno.alumno?.nombre);
     const alumnoId = rNuevoAlumno.alumno?.id || 1;
 
     // 5. Docente crea una Presentación Adaptada para el alumno
@@ -76,11 +76,11 @@ async function runTests() {
         objetivo_pedagogico: "Enfoque atencional en 3 pasos cortos",
         alumno_id: alumnoId,
         diapositivas: [
-          { orden: 1, titulo: "Paso 1", instruccion: "Mirar bloques", apoyo_visual: "🟢" },
+          { orden: 1, titulo: "Paso 1", instruccion: "Mirar bloques", apoyo_visual: "Estado Verde" },
         ],
       }),
     }).then((r) => r.json());
-    console.log("✅ 5. Presentación Adaptada creada por Docente:", rPres.ok, rPres.presentacion?.titulo);
+    console.log("[OK] 5. Presentación Adaptada creada por Docente:", rPres.ok, rPres.presentacion?.titulo);
 
     // 6. Docente asigna tarea y se envía primero al Terapeuta
     const rTarea = await fetch(`${baseUrl}/api/tareas`, {
@@ -98,7 +98,7 @@ async function runTests() {
     }).then((r) => r.json());
     const tareaCreada = rTarea.tareas?.[0];
     console.log(
-      "✅ 6. Docente crea tarea (enviada al Terapeuta):",
+      "[OK] 6. Docente crea tarea (enviada al Terapeuta):",
       rTarea.ok,
       "| Estado inicial:",
       tareaCreada?.estado
@@ -117,7 +117,7 @@ async function runTests() {
       }),
     }).then((r) => r.json());
     console.log(
-      "✅ 7. Terapeuta adapta tarea con pautas TDAH:",
+      "[OK] 7. Terapeuta adapta tarea con pautas TDAH:",
       rAdaptar.ok,
       "| Nuevo estado:",
       rAdaptar.tarea?.estado
@@ -147,7 +147,7 @@ async function runTests() {
       }
     ).then((r) => r.json());
     console.log(
-      "✅ 8. Tutor envía reporte sobre la actividad:",
+      "[OK] 8. Tutor envía reporte sobre la actividad:",
       rReporteTutor.ok,
       "| Estado final:",
       rReporteTutor.tarea?.estado
@@ -166,12 +166,12 @@ async function runTests() {
         contenido: "Excelente coordinación equipo, recibí el reporte del tutor.",
       }),
     }).then((r) => r.json());
-    console.log("✅ 9. Mensaje en Chat en Tiempo Real:", rChat.ok);
+    console.log("[OK] 9. Mensaje en Chat en Tiempo Real:", rChat.ok);
 
-    console.log("\n🎉 TODAS LAS PRUEBAS DE SINCROAULA PASARON AL 100% 🎉");
+    console.log("\n[EXITO] TODAS LAS PRUEBAS DE SINCROAULA PASARON AL 100%");
     process.exit(0);
   } catch (err) {
-    console.error("❌ Error en pruebas:", err);
+    console.error("[ERROR] Error en pruebas:", err);
     process.exit(1);
   }
 }

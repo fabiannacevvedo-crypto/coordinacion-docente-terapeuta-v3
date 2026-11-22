@@ -1,14 +1,15 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext.jsx";
+import { SincroAulaLogo } from "../common/SincroAulaLogo.jsx";
 import {
-  Sparkles,
   GraduationCap,
   Stethoscope,
   Users,
   ShieldCheck,
   LogOut,
   CheckCircle2,
+  Activity,
 } from "lucide-react";
 
 export const Navbar = () => {
@@ -39,8 +40,8 @@ export const Navbar = () => {
   return (
     <header
       style={{
-        background: "rgba(255, 255, 255, 0.92)",
-        backdropFilter: "blur(12px)",
+        background: "rgba(255, 255, 255, 0.94)",
+        backdropFilter: "blur(14px)",
         borderBottom: "1px solid var(--surface-border)",
         position: "sticky",
         top: 0,
@@ -51,36 +52,16 @@ export const Navbar = () => {
         style={{
           maxWidth: "1240px",
           margin: "0 auto",
-          padding: "0.85rem 1rem",
+          padding: "0.75rem 1rem",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
           gap: "1rem",
         }}
       >
-        {/* Logo / Marca */}
-        <Link to="/" style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
-          <div
-            style={{
-              width: "38px",
-              height: "38px",
-              borderRadius: "10px",
-              background: "linear-gradient(135deg, #2563eb 0%, #06b6d4 100%)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "white",
-              boxShadow: "0 4px 12px rgba(37, 99, 235, 0.3)",
-            }}
-          >
-            <Sparkles size={20} />
-          </div>
-          <div>
-            <div style={{ fontSize: "1.25rem", fontWeight: "900", fontFamily: "var(--font-heading)", color: "#0f172a", lineHeight: 1 }}>
-              Sincro<span style={{ color: "var(--primary)" }}>Aula</span>
-            </div>
-            <div style={{ fontSize: "0.68rem", color: "#64748b", fontWeight: "600" }}>Docente · Terapeuta · Familia</div>
-          </div>
+        {/* Nuevo Logo Personalizado e Innovador de SincroAula */}
+        <Link to="/" style={{ display: "flex", alignItems: "center" }}>
+          <SincroAulaLogo size={42} showText={true} darkText={true} />
         </Link>
 
         {/* Enlaces de Navegación */}
@@ -91,15 +72,20 @@ export const Navbar = () => {
                 <Link
                   to="/dashboard/docente"
                   style={{
-                    padding: "0.45rem 0.75rem",
-                    borderRadius: "8px",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "0.4rem",
+                    padding: "0.5rem 0.9rem",
+                    borderRadius: "10px",
                     fontSize: "0.85rem",
-                    fontWeight: "600",
+                    fontWeight: "700",
                     background: isActive("/dashboard/docente") ? "var(--docente-bg)" : "transparent",
                     color: isActive("/dashboard/docente") ? "var(--docente-color)" : "#475569",
+                    border: isActive("/dashboard/docente") ? "1px solid #bfdbfe" : "1px solid transparent",
                   }}
                 >
-                  Aula Docente
+                  <GraduationCap size={16} />
+                  <span>Panel Docente</span>
                 </Link>
               )}
 
@@ -107,15 +93,20 @@ export const Navbar = () => {
                 <Link
                   to="/dashboard/terapeuta"
                   style={{
-                    padding: "0.45rem 0.75rem",
-                    borderRadius: "8px",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "0.4rem",
+                    padding: "0.5rem 0.9rem",
+                    borderRadius: "10px",
                     fontSize: "0.85rem",
-                    fontWeight: "600",
+                    fontWeight: "700",
                     background: isActive("/dashboard/terapeuta") ? "var(--terapeuta-bg)" : "transparent",
                     color: isActive("/dashboard/terapeuta") ? "var(--terapeuta-color)" : "#475569",
+                    border: isActive("/dashboard/terapeuta") ? "1px solid #ddd6fe" : "1px solid transparent",
                   }}
                 >
-                  Gabinete Terapeuta
+                  <Stethoscope size={16} />
+                  <span>Gabinete Terapeuta</span>
                 </Link>
               )}
 
@@ -123,15 +114,20 @@ export const Navbar = () => {
                 <Link
                   to="/dashboard/familiar"
                   style={{
-                    padding: "0.45rem 0.75rem",
-                    borderRadius: "8px",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "0.4rem",
+                    padding: "0.5rem 0.9rem",
+                    borderRadius: "10px",
                     fontSize: "0.85rem",
-                    fontWeight: "600",
+                    fontWeight: "700",
                     background: isActive("/dashboard/familiar") ? "var(--familiar-bg)" : "transparent",
                     color: isActive("/dashboard/familiar") ? "var(--familiar-color)" : "#475569",
+                    border: isActive("/dashboard/familiar") ? "1px solid #a7f3d0" : "1px solid transparent",
                   }}
                 >
-                  Portal Familiar
+                  <Users size={16} />
+                  <span>Portal Familiar</span>
                 </Link>
               )}
 
@@ -139,15 +135,19 @@ export const Navbar = () => {
                 <Link
                   to="/dashboard/admin"
                   style={{
-                    padding: "0.45rem 0.75rem",
-                    borderRadius: "8px",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "0.4rem",
+                    padding: "0.5rem 0.9rem",
+                    borderRadius: "10px",
                     fontSize: "0.85rem",
-                    fontWeight: "600",
+                    fontWeight: "700",
                     background: isActive("/dashboard/admin") ? "var(--admin-bg)" : "transparent",
                     color: isActive("/dashboard/admin") ? "var(--admin-color)" : "#475569",
                   }}
                 >
-                  Gestión y Usuarios
+                  <ShieldCheck size={16} />
+                  <span>Gestión y Usuarios</span>
                 </Link>
               )}
             </>
@@ -157,9 +157,27 @@ export const Navbar = () => {
         {/* Perfil o Botones de Auth */}
         <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
           {user ? (
-            <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.4rem",
+                  background: "#f0fdf4",
+                  border: "1px solid #bbf7d0",
+                  padding: "0.3rem 0.65rem",
+                  borderRadius: "999px",
+                  fontSize: "0.72rem",
+                  fontWeight: "700",
+                  color: "#15803d",
+                }}
+              >
+                <Activity size={13} />
+                <span>Sincronización Activa</span>
+              </div>
+
               <div style={{ textAlign: "right" }}>
-                <div style={{ fontSize: "0.85rem", fontWeight: "700", color: "#1e293b" }}>
+                <div style={{ fontSize: "0.85rem", fontWeight: "800", color: "#1e293b" }}>
                   {getRoleDisplayName()}
                 </div>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "0.25rem" }}>

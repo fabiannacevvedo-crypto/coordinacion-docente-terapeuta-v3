@@ -20,7 +20,7 @@ import { asegurarBaseDeDatosMySQL } from "../config/database.js";
 import { hashPassword } from "../helpers/bcrypt.helper.js";
 
 export async function runSeed() {
-  console.log("🌱 Iniciando siembra de datos iniciales en SincroAula...");
+  console.log("[SincroAula] Iniciando siembra de datos iniciales...");
 
   await asegurarBaseDeDatosMySQL();
   await sequelize.sync({ alter: true });
@@ -41,7 +41,7 @@ export async function runSeed() {
     });
     rolesMap[r.name] = role;
   }
-  console.log("✅ Roles inicializados");
+  console.log("[OK] Roles inicializados");
 
   // 2. Crear Usuarios Demo
   const adminPass = await hashPassword("admin123");
@@ -152,7 +152,7 @@ export async function runSeed() {
       verificado_tutela: true,
     },
   });
-  console.log("✅ Usuarios base creados (Rol Docente, Rol Terapeuta, Familiar Tutor, Administrador)");
+  console.log("[OK] Usuarios base creados (Rol Docente, Rol Terapeuta, Familiar Tutor, Administrador)");
 
   // 3. Crear Alumnos con orientación en TDAH
   const [alumno1] = await AlumnoModel.findOrCreate({
@@ -203,7 +203,7 @@ export async function runSeed() {
       codigo_familiar: "FAM-LUC-2026",
     },
   });
-  console.log("✅ Alumnos con perfiles neuroeducativos TDAH inicializados");
+  console.log("[OK] Alumnos con perfiles neuroeducativos TDAH inicializados");
 
   // 4. Vínculos Equipo Interdisciplinario -> Alumnos
   for (const alum of [alumno1, alumno2, alumno3]) {
@@ -280,7 +280,7 @@ export async function runSeed() {
       },
     });
   }
-  console.log("✅ Catálogo de estrategias TDAH inicializado");
+  console.log("[OK] Catálogo de estrategias TDAH inicializado");
 
   // 6. Tareas de Ejemplo en el Circuito Docente -> Terapeuta -> Tutor Familiar
   const countTareas = await TareaModel.count();
@@ -298,7 +298,7 @@ export async function runSeed() {
       pautas_tdah_aplicadas:
         "Micro-segmentación en 3 pasos cortos (Chunking) + Uso de Temporizador Visual de 8 min + Eliminación de estímulo distractor (paisaje de fondo opcional)",
       adaptacion_terapeuta:
-        "🎯 MISIÓN EN 3 PASOS CORTOS (Con pausa activa intermedia):\n• PASO 1 (5 min): Elegimos solo 4 figuras grandes (rojas y azules) y las separamos sobre la mesa.\n• PAUSA ACTIVA (2 min): Saltamos como ranitas o estiramos brazos antes de pegar.\n• PASO 2 (5 min): Pegamos las 4 figuras en la hoja limpia sin bordes distractores.\n• PASO 3 (Logro): ¡Chocamos los cinco y marcamos la estrella de misión cumplida!",
+        "MISIÓN EN 3 PASOS CORTOS (Con pausa activa intermedia):\n• PASO 1 (5 min): Elegimos solo 4 figuras grandes (rojas y azules) y las separamos sobre la mesa.\n• PAUSA ACTIVA (2 min): Estiramos brazos y caminamos antes de pegar.\n• PASO 2 (5 min): Pegamos las 4 figuras en la hoja limpia sin bordes distractores.\n• PASO 3 (Logro): Chocamos los cinco y marcamos la insignia de misión cumplida.",
       recursos_apoyo: "Temporizador visual 5 min + Pictograma 'Primero recorto, después pego'",
       estado: "ADAPTADA_ENVIADA_TUTOR",
       fecha_entrega: new Date(Date.now() + 86400000 * 2).toISOString().split("T")[0],
@@ -358,28 +358,28 @@ export async function runSeed() {
           orden: 1,
           titulo: "1. ¡Bienvenidos! Nos saludamos con calma",
           instruccion: "Miramos la pantalla, respiramos profundo 3 veces y chocamos las manos con el compañero.",
-          apoyo_visual: "🟢 Estado Verde · 3 minutos",
+          apoyo_visual: "Estado Verde · 3 minutos",
           pauta_tdah: "Anclaje atencional inicial sin sobrecarga sonora",
         },
         {
           orden: 2,
           titulo: "2. Misión Corta: Buscamos 3 Bloques Azules",
           instruccion: "Solo buscamos bloques de color AZUL y los ponemos dentro de la caja.",
-          apoyo_visual: "🔵 🔵 🔵 · Reloj Visual: 5 minutos",
+          apoyo_visual: "3 Bloques Azules · Reloj Visual: 5 minutos",
           pauta_tdah: "Consigna única y concreta con movimiento motor permitido",
         },
         {
           orden: 3,
           titulo: "3. Pausa Activa de Movimiento",
           instruccion: "Nos paramos, estiramos los brazos al techo y sacudimos las manos durante 1 minuto.",
-          apoyo_visual: "⚡ Descarga Kinestésica Regulada",
+          apoyo_visual: "Descarga Kinestésica Regulada",
           pauta_tdah: "Prevención de fatiga atencional e impulsividad",
         },
         {
           orden: 4,
           titulo: "4. ¡Logro Desbloqueado!",
           instruccion: "Guardamos los bloques y ganamos la insignia de Gran Equipo del día.",
-          apoyo_visual: "⭐ Refuerzo Positivo Inmediato",
+          apoyo_visual: "Refuerzo Positivo Inmediato",
           pauta_tdah: "Dopamina positiva por cierre exitoso de tarea",
         },
       ]),
@@ -467,7 +467,7 @@ export async function runSeed() {
     },
   });
 
-  console.log("✨ Siembra de datos completada exitosamente en SincroAula.");
+  console.log("[OK] Siembra de datos completada exitosamente en SincroAula.");
 }
 
 // Ejecutar directamente si se llama por CLI
@@ -475,7 +475,7 @@ if (process.argv[1]?.includes("seed.js")) {
   runSeed()
     .then(() => process.exit(0))
     .catch((err) => {
-      console.error("❌ Error en seed:", err);
+      console.error("[ERROR] Error en seed:", err);
       process.exit(1);
     });
 }

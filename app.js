@@ -58,21 +58,21 @@ app.use(cookieParser());
   try {
     await asegurarBaseDeDatosMySQL();
     await sequelize.authenticate();
-    console.log(`🚀 Base de datos conectada exitosamente [Dialecto activo: ${getActiveDialect().toUpperCase()}]`);
+    console.log(`[SincroAula] Base de datos conectada exitosamente [Dialecto activo: ${getActiveDialect().toUpperCase()}]`);
 
     // Sincronizar modelos y asociaciones
     await sequelize.sync();
-    console.log("📦 Modelos Sequelize sincronizados (Paranoid Soft Delete, Relaciones 1:1, 1:N, N:M)");
+    console.log("[SincroAula] Modelos Sequelize sincronizados (Paranoid Soft Delete, Relaciones 1:1, 1:N, N:M)");
 
     // Auto-siembra de datos de prueba si la base está recién creada o si faltan tareas TDAH
     const cantidadUsuarios = await UserModel.count();
     const cantidadTareas = await TareaModel.count();
     if (cantidadUsuarios === 0 || cantidadTareas === 0) {
-      console.log("ℹ️ Inicializando datos base y módulos neuroeducativos TDAH...");
+      console.log("[SincroAula] Inicializando datos base y módulos neuroeducativos TDAH...");
       await runSeed();
     }
   } catch (error) {
-    console.error("❌ Error al inicializar la base de datos:", error.message);
+    console.error("[ERROR] Error al inicializar la base de datos:", error.message);
   }
 })();
 
@@ -153,7 +153,7 @@ app.get("/{*splat}", (req, res, next) => {
 
 // Manejo de errores no capturados
 app.use((err, req, res, next) => {
-  console.error("🔥 Error no controlado:", err);
+  console.error("[ERROR] Error no controlado:", err);
   res.status(500).json({
     ok: false,
     mensaje: "Error interno en el servidor",
@@ -163,8 +163,8 @@ app.use((err, req, res, next) => {
 
 app.listen(PORT, () => {
   console.log(`\n======================================================`);
-  console.log(`🌟 SincroAula corriendo en http://localhost:${PORT}`);
-  console.log(`📚 Documentación API y Healthcheck en http://localhost:${PORT}/api/health`);
+  console.log(`[SincroAula] Servidor corriendo en http://localhost:${PORT}`);
+  console.log(`[SincroAula] Documentación API y Healthcheck en http://localhost:${PORT}/api/health`);
   console.log(`======================================================\n`);
 });
 

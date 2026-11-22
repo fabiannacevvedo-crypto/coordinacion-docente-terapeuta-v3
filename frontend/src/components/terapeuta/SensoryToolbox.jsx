@@ -13,9 +13,13 @@ import {
   Play,
   Pause,
   Star,
+  Gift,
+  BarChart3,
+  FileText,
+  Send,
 } from "lucide-react";
 
-export const SensoryToolbox = ({ onEstrategiaSeleccionada }) => {
+export const SensoryToolbox = ({ onEstrategiaSeleccionada, onEmitirRecomendacionRapida }) => {
   const [herramientaActiva, setHerramientaActiva] = useState("RESPIRACION");
 
   // 1. Estado de Respiración 4-4-4
@@ -24,16 +28,16 @@ export const SensoryToolbox = ({ onEstrategiaSeleccionada }) => {
   const [activo, setActivo] = useState(false);
 
   // 2. Estado de Temporizador Visual Time-Timer / Pomodoro TDAH
-  const [tiempoPomodoro, setTiempoPomodoro] = useState(300); // 5 min por defecto
+  const [tiempoPomodoro, setTiempoPomodoro] = useState(300);
   const [pomodoroTotal, setPomodoroTotal] = useState(300);
   const [pomodoroActivo, setPomodoroActivo] = useState(false);
 
-  // 3. Estado de Autoinstrucciones de Meichenbaum (Control de Impulsividad TDAH)
+  // 3. Estado de Autoinstrucciones de Meichenbaum (Control de Impulsividad TDAH - Sin Emojis)
   const [pasosMeichenbaum, setPasosMeichenbaum] = useState([
-    { id: 1, titulo: "1. 🛑 PARO Y MIRO", desc: "Freno mis manos, respiro y miro la hoja antes de empezar.", completado: false },
-    { id: 2, titulo: "2. 🤔 ¿QUÉ TENGO QUE HACER?", desc: "Leo o escucho solo el primer paso corto de la misión.", completado: false },
-    { id: 3, titulo: "3. 🐢 LO HAGO CON CALMA", desc: "Avanzo paso a paso siguiendo mi reloj visual sin apurarme.", completado: false },
-    { id: 4, titulo: "4. 🌟 REVISO Y ME FELICITO", desc: "Verifico si terminé el paso y celebro mi esfuerzo.", completado: false },
+    { id: 1, titulo: "1. PARO Y MIRO", desc: "Freno mis manos, respiro y miro la hoja antes de empezar.", completado: false },
+    { id: 2, titulo: "2. ¿QUÉ TENGO QUE HACER?", desc: "Leo o escucho solo el primer paso corto de la misión.", completado: false },
+    { id: 3, titulo: "3. LO HAGO CON CALMA", desc: "Avanzo paso a paso siguiendo mi reloj visual sin apurarme.", completado: false },
+    { id: 4, titulo: "4. REVISO Y ME FELICITO", desc: "Verifico si terminé el paso y celebro mi esfuerzo.", completado: false },
   ]);
 
   // 4. Economía de Fichas Dopaminérgica TDAH
@@ -42,10 +46,18 @@ export const SensoryToolbox = ({ onEstrategiaSeleccionada }) => {
   const [recompensaElegida, setRecompensaElegida] = useState("Elegir el juego de cierre o ser Ayudante de Sala");
 
   // 5. Termómetro de Función Ejecutiva y Atención TDAH
-  const [nivelAtencion, setNivelAtencion] = useState(80);
-  const [nivelHiperactividad, setNivelHiperactividad] = useState(35);
+  const [nivelAtencion, setNivelAtencion] = useState(82);
+  const [nivelHiperactividad, setNivelHiperactividad] = useState(30);
+  const [nivelRegulacionEmocional, setNivelRegulacionEmocional] = useState(88);
 
-  // Efecto Respiración 4-4-4
+  // 6. Registro Funcional ABC (Antecedente - Conducta - Consecuencia)
+  const [abcForm, setAbcForm] = useState({
+    antecedente: "Transición de actividad grupal con ruido en el pasillo",
+    conducta: "Inquietud motora y dificultad para sostener el foco en la consigna",
+    consecuencia: "Se aplicó micro-segmentación en 2 pasos + pausa activa con retorno a estado Verde",
+  });
+  const [abcGuardado, setAbcGuardado] = useState(false);
+
   useEffect(() => {
     let timer = null;
     if (activo) {
@@ -71,7 +83,6 @@ export const SensoryToolbox = ({ onEstrategiaSeleccionada }) => {
     return () => clearInterval(timer);
   }, [activo, faseRespiracion]);
 
-  // Efecto Temporizador Visual TDAH
   useEffect(() => {
     let timer = null;
     if (pomodoroActivo && tiempoPomodoro > 0) {
@@ -126,23 +137,23 @@ export const SensoryToolbox = ({ onEstrategiaSeleccionada }) => {
   return (
     <div className="card" style={{ borderLeft: "4px solid var(--terapeuta-color)" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1rem" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-          <div style={{ background: "var(--terapeuta-bg)", padding: "0.45rem", borderRadius: "8px", color: "var(--terapeuta-color)" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.55rem" }}>
+          <div style={{ background: "var(--terapeuta-bg)", padding: "0.5rem", borderRadius: "8px", color: "var(--terapeuta-color)" }}>
             <Brain size={20} />
           </div>
           <div>
             <h3 style={{ fontSize: "1.05rem", fontWeight: "800", color: "#0f172a" }}>
-              Caja de Herramientas Clínicas y Sensoriales TDAH
+              Caja de Herramientas Clínicas y Ejecutivas TDAH
             </h3>
             <p style={{ fontSize: "0.75rem", color: "#64748b" }}>
-              Andamiaje ejecutivo, autorregulación e intervención en vivo
+              Andamiaje ejecutivo, autorregulación e intervención sincronizada
             </p>
           </div>
         </div>
       </div>
 
       {/* Pestañas de Herramientas Interactivas */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "0.4rem", marginBottom: "1rem" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "0.4rem", marginBottom: "1rem" }}>
         <button
           type="button"
           onClick={() => setHerramientaActiva("RESPIRACION")}
@@ -150,10 +161,11 @@ export const SensoryToolbox = ({ onEstrategiaSeleccionada }) => {
           style={{
             background: herramientaActiva === "RESPIRACION" ? "var(--terapeuta-color)" : "#f1f5f9",
             color: herramientaActiva === "RESPIRACION" ? "white" : "#334155",
-            fontSize: "0.75rem",
+            fontSize: "0.72rem",
+            padding: "0.4rem 0.5rem",
           }}
         >
-          <Wind size={14} /> Respiración 4-4-4
+          <Wind size={13} /> Respiración
         </button>
 
         <button
@@ -163,10 +175,11 @@ export const SensoryToolbox = ({ onEstrategiaSeleccionada }) => {
           style={{
             background: herramientaActiva === "POMODORO" ? "var(--terapeuta-color)" : "#f1f5f9",
             color: herramientaActiva === "POMODORO" ? "white" : "#334155",
-            fontSize: "0.75rem",
+            fontSize: "0.72rem",
+            padding: "0.4rem 0.5rem",
           }}
         >
-          <Clock size={14} /> Reloj Visual TDAH
+          <Clock size={13} /> Reloj TDAH
         </button>
 
         <button
@@ -176,10 +189,11 @@ export const SensoryToolbox = ({ onEstrategiaSeleccionada }) => {
           style={{
             background: herramientaActiva === "MEICHENBAUM" ? "var(--terapeuta-color)" : "#f1f5f9",
             color: herramientaActiva === "MEICHENBAUM" ? "white" : "#334155",
-            fontSize: "0.75rem",
+            fontSize: "0.72rem",
+            padding: "0.4rem 0.5rem",
           }}
         >
-          <Brain size={14} /> Autoinstrucciones
+          <Brain size={13} /> Meichenbaum
         </button>
 
         <button
@@ -189,10 +203,26 @@ export const SensoryToolbox = ({ onEstrategiaSeleccionada }) => {
           style={{
             background: herramientaActiva === "FICHAS" ? "var(--terapeuta-color)" : "#f1f5f9",
             color: herramientaActiva === "FICHAS" ? "white" : "#334155",
-            fontSize: "0.75rem",
+            fontSize: "0.72rem",
+            padding: "0.4rem 0.5rem",
           }}
         >
-          <Award size={14} /> Economía de Fichas
+          <Award size={13} /> Fichas
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setHerramientaActiva("ABC")}
+          className="btn btn-sm"
+          style={{
+            background: herramientaActiva === "ABC" ? "var(--terapeuta-color)" : "#f1f5f9",
+            color: herramientaActiva === "ABC" ? "white" : "#334155",
+            fontSize: "0.72rem",
+            padding: "0.4rem 0.5rem",
+            gridColumn: "span 2",
+          }}
+        >
+          <FileText size={13} /> Matriz Conductual ABC
         </button>
       </div>
 
@@ -272,7 +302,6 @@ export const SensoryToolbox = ({ onEstrategiaSeleccionada }) => {
             {formatTime(tiempoPomodoro)}
           </div>
 
-          {/* Barra visual regresiva */}
           <div style={{ width: "100%", height: "10px", background: "#cbd5e1", borderRadius: "999px", overflow: "hidden", marginBottom: "0.75rem" }}>
             <div
               style={{
@@ -392,7 +421,7 @@ export const SensoryToolbox = ({ onEstrategiaSeleccionada }) => {
             Tablero de Economía de Fichas y Refuerzo Inmediato
           </div>
           <p style={{ fontSize: "0.725rem", color: "#78350f", marginBottom: "0.65rem" }}>
-            Recompensa dopaminérgica por cada micro-meta cumplida ({estrellasGanadas}/{metaEstrellas} estrellas)
+            Recompensa dopaminérgica por cada micro-meta cumplida ({estrellasGanadas}/{metaEstrellas} logros)
           </p>
 
           <div style={{ display: "flex", justifyContent: "center", gap: "0.45rem", marginBottom: "0.75rem" }}>
@@ -408,26 +437,101 @@ export const SensoryToolbox = ({ onEstrategiaSeleccionada }) => {
                   border: "none",
                   background: num <= estrellasGanadas ? "#f59e0b" : "white",
                   color: num <= estrellasGanadas ? "white" : "#cbd5e1",
-                  fontSize: "1.25rem",
                   cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
                   boxShadow: num <= estrellasGanadas ? "0 4px 10px rgba(245, 158, 11, 0.35)" : "none",
                 }}
               >
-                ★
+                <Star size={20} fill={num <= estrellasGanadas ? "white" : "none"} />
               </button>
             ))}
           </div>
 
-          <div style={{ fontSize: "0.75rem", fontWeight: "700", color: "#92400e", background: "rgba(255,255,255,0.7)", padding: "0.4rem 0.6rem", borderRadius: "8px" }}>
-            🎁 Meta acordada: {recompensaElegida}
+          <div style={{ fontSize: "0.75rem", fontWeight: "700", color: "#92400e", background: "rgba(255,255,255,0.7)", padding: "0.45rem 0.65rem", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", gap: "0.4rem" }}>
+            <Gift size={14} color="#d97706" />
+            <span>Meta acordada: {recompensaElegida}</span>
           </div>
         </div>
       )}
 
-      {/* Termómetro Ejecutivo en Vivo (Foco vs Hiperactividad) */}
+      {/* HERRAMIENTA 5: Matriz Funcional Conductual ABC */}
+      {herramientaActiva === "ABC" && (
+        <div
+          style={{
+            background: "#f8fafc",
+            border: "1px solid #cbd5e1",
+            borderRadius: "14px",
+            padding: "1rem",
+            marginBottom: "1.25rem",
+          }}
+        >
+          <div style={{ fontSize: "0.825rem", fontWeight: "800", color: "#1e293b", marginBottom: "0.3rem" }}>
+            Matriz de Evaluación Conductual ABC (TDAH)
+          </div>
+          <p style={{ fontSize: "0.72rem", color: "#64748b", marginBottom: "0.65rem" }}>
+            Registra el Antecedente, la Conducta observada y la Consecuencia/Intervención para sincronizar con el Docente:
+          </p>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.45rem", marginBottom: "0.65rem" }}>
+            <div>
+              <label style={{ fontSize: "0.7rem", fontWeight: "700", color: "#475569" }}>A · Antecedente (Disparador)</label>
+              <input
+                type="text"
+                value={abcForm.antecedente}
+                onChange={(e) => setAbcForm({ ...abcForm, antecedente: e.target.value })}
+                className="form-input"
+                style={{ fontSize: "0.75rem", padding: "0.4rem 0.6rem" }}
+              />
+            </div>
+            <div>
+              <label style={{ fontSize: "0.7rem", fontWeight: "700", color: "#475569" }}>B · Conducta Observada</label>
+              <input
+                type="text"
+                value={abcForm.conducta}
+                onChange={(e) => setAbcForm({ ...abcForm, conducta: e.target.value })}
+                className="form-input"
+                style={{ fontSize: "0.75rem", padding: "0.4rem 0.6rem" }}
+              />
+            </div>
+            <div>
+              <label style={{ fontSize: "0.7rem", fontWeight: "700", color: "#475569" }}>C · Consecuencia / Pauta Exitosa</label>
+              <input
+                type="text"
+                value={abcForm.consecuencia}
+                onChange={(e) => setAbcForm({ ...abcForm, consecuencia: e.target.value })}
+                className="form-input"
+                style={{ fontSize: "0.75rem", padding: "0.4rem 0.6rem" }}
+              />
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => {
+              setAbcGuardado(true);
+              if (onEmitirRecomendacionRapida) {
+                onEmitirRecomendacionRapida(
+                  `Registro Clínico ABC: [Antecedente] ${abcForm.antecedente} -> [Conducta] ${abcForm.conducta} -> [Pauta Exitosa] ${abcForm.consecuencia}`
+                );
+              }
+              setTimeout(() => setAbcGuardado(false), 4000);
+            }}
+            className="btn btn-primary btn-sm btn-block"
+            style={{ background: "var(--terapeuta-color)", fontSize: "0.75rem" }}
+          >
+            <Send size={13} />
+            <span>{abcGuardado ? "Matriz ABC Compartida con Docente y Tutor" : "Compartir Matriz ABC con el Equipo"}</span>
+          </button>
+        </div>
+      )}
+
+      {/* Termómetro Ejecutivo en Vivo (Foco vs Hiperactividad vs Regulación) */}
       <div style={{ background: "#f8fafc", padding: "0.85rem", borderRadius: "10px", border: "1px solid #e2e8f0", marginBottom: "1rem" }}>
-        <div style={{ fontSize: "0.775rem", fontWeight: "800", color: "#334155", marginBottom: "0.5rem" }}>
-          📊 Monitoreo de Función Ejecutiva en Vivo (TDAH)
+        <div style={{ fontSize: "0.775rem", fontWeight: "800", color: "#334155", marginBottom: "0.5rem", display: "flex", alignItems: "center", gap: "0.35rem" }}>
+          <BarChart3 size={15} color="var(--terapeuta-color)" />
+          <span>Monitoreo de Función Ejecutiva en Vivo (TDAH)</span>
         </div>
         <div style={{ marginBottom: "0.4rem" }}>
           <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.725rem", fontWeight: "700", color: "#059669" }}>
@@ -443,7 +547,7 @@ export const SensoryToolbox = ({ onEstrategiaSeleccionada }) => {
             style={{ width: "100%", accentColor: "#10b981" }}
           />
         </div>
-        <div>
+        <div style={{ marginBottom: "0.4rem" }}>
           <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.725rem", fontWeight: "700", color: "#d97706" }}>
             <span>Inquietud Motora / Impulsividad</span>
             <span>{nivelHiperactividad}%</span>
@@ -457,12 +561,26 @@ export const SensoryToolbox = ({ onEstrategiaSeleccionada }) => {
             style={{ width: "100%", accentColor: "#f59e0b" }}
           />
         </div>
+        <div>
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.725rem", fontWeight: "700", color: "#2563eb" }}>
+            <span>Autorregulación Emocional</span>
+            <span>{nivelRegulacionEmocional}%</span>
+          </div>
+          <input
+            type="range"
+            min="0"
+            max="100"
+            value={nivelRegulacionEmocional}
+            onChange={(e) => setNivelRegulacionEmocional(Number(e.target.value))}
+            style={{ width: "100%", accentColor: "#2563eb" }}
+          />
+        </div>
       </div>
 
       {/* Protocolos rápidos de 1-clic */}
       <div>
         <div style={{ fontSize: "0.8rem", fontWeight: "700", color: "#475569", marginBottom: "0.5rem" }}>
-          Pautas Rápidas TDAH para Aplicar o Sugerir:
+          Pautas Rápidas TDAH para Aplicar o Sugerir al Docente:
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: "0.45rem" }}>
           {tecnicas.map((t, idx) => {
